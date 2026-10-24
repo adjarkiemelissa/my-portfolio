@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melissa Adjarkie Adjanor | Portfolio</title>
+    
+    <!-- Fonts: Multiple families included for the shifting intro animation -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Space+Grotesk:wght@300..700&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --bg: #F4F1EA;
+            --bg-dark: #1A1816;
+            --ink: #1A1816;
+            --ink-light: #5C5854;
+            --accent: #8A1919; /* Deep Adissa Red */
+            --accent-gold: #D9A05B;
+            --font-display: 'Bodoni Moda', serif;
+            --font-sans: 'Syne', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --ease: cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        /* --- RESET & BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+
+        /* --- PAGE TRANSITION SYSTEM --- */
+        .page {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+        }
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- CINEMATIC INTRO ANIMATION --- */
+        #intro-overlay {
+            position: fixed; inset: 0;
+            background: var(--bg);
+            z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            transition: opacity 1s var(--ease), visibility 1s;
+        }
+        .intro-grid {
+            position: absolute; inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(26,24,22,0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(26,24,22,0.05) 1px, transparent 1px);
+            background-size: 10vw 10vh;
+            opacity: 0;
+            animation: fadeIn 1s ease 0.5s forwards;
+        }
+        
+        /* The Wrapper that holds the text and the lines */
+        .intro-logo-container {
+            position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 1.5rem;
+            width: 90vw;
+            max-width: 1200px;
+            /* Box shadow to act as a faint bounding box */
+            box-shadow: 0 0 0 1px rgba(138, 25, 25, 0.1); 
+        }
+        
+        /* Dynamic Intro Text */
+        .intro-text {
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.95);
+            animation: logoReveal 1.5s var(--ease) 0.8s forwards;
+            transition: font-family 0.2s, color 0.2s, font-style 0.2s, font-size 0.2s, letter-spacing 0.2s;
+            line-height: 1.1;
+            word-wrap: break-word;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Font and Size Classes injected by JS */
+        .font-1 { font-family: 'Bodoni Moda', serif; font-style: normal; font-size: clamp(2.5rem, 8vw, 7rem); letter-spacing: -0.02em; font-weight: 900; }
+        .font-2 { font-family: 'Space Grotesk', sans-serif; font-style: normal; font-size: clamp(2rem, 7vw, 6rem); letter-spacing: -0.01em; font-weight: 700; }
+        .font-3 { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(3rem, 9vw, 8rem); letter-spacing: 0.02em; font-weight: 500; }
+        .font-4 { font-family: 'Syne', sans-serif; font-style: normal; font-size: clamp(1.8rem, 6vw, 5.5rem); letter-spacing: 0.05em; font-weight: 800; }
+        .font-5 { font-family: 'Playfair Display', serif; font-style: normal; font-size: clamp(2.5rem, 7.5vw, 6.5rem); letter-spacing: -0.03em; font-weight: 700; }
+
+        .color-red { color: var(--accent); }
+        .color-gold { color: var(--accent-gold); }
+        .color-ink { color: var(--ink); }
+
+        /* Measurement Lines - Absolute to the container */
+        .measure-line {
+            position: absolute;
+            background: var(--accent);
+            opacity: 0;
+        }
+        .m-top { top: 0; left: 0; width: 100%; height: 1px; transform: scaleX(0); transform-origin: left; animation: drawLineX 1s var(--ease) 1.5s forwards; }
+        .m-bottom { bottom: 0; left: 0; width: 100%; height: 1px; transform: scaleX(0); transform-origin: right; animation: drawLineX 1s var(--ease) 1.5s forwards; }
+        .m-left { left: 0; top: 0; width: 1px; height: 100%; transform: scaleY(0); transform-origin: top; animation: drawLineY 1s var(--ease) 1.5s forwards; }
+        .m-right { right: 0; top: 0; width: 1px; height: 100%; transform: scaleY(0); transform-origin: bottom; animation: drawLineY 1s var(--ease) 1.5s forwards; }
+        
+        .measure-text {
+            position: absolute;
+            font-family: var(--font-sans);
+            font-size: 0.55rem;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            opacity: 0;
+            animation: fadeIn 0.5s ease 2.5s forwards;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .mt-top { top: -20px; left: 50%; transform: translateX(-50%); }
+        .mt-bottom { bottom: -20px; left: 50%; transform: translateX(-50%); }
+        .mt-left { left: -30px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+        .mt-right { right: -30px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+        /* Colour Swatches */
+        .swatches {
+            position: absolute; bottom: -50px; left: 0; width: 100%;
+            display: flex; justify-content: space-between; padding: 0 10px;
+            opacity: 0; animation: fadeIn 0.5s ease 2.8s forwards;
+        }
+        .swatch { display: flex; align-items: center; gap: 6px; }
+        .swatch-circle { width: 10px; height: 10px; border-radius: 50%; }
+        .swatch-text { font-family: var(--font-sans); font-size: 0.45rem; letter-spacing: 0.1em; }
+        .c-red { background: var(--accent); }
+        .c-gold { background: var(--accent-gold); }
+        .c-ink { background: var(--ink); }
+        .c-bg { background: var(--bg-dark); }
+
+        .intro-sub {
+            position: absolute; bottom: 10vh;
+            font-family: var(--font-sans); font-size: 0.7rem; letter-spacing: 0.3em;
+            text-transform: uppercase; color: var(--ink-light); text-align: center;
+            opacity: 0; animation: fadeIn 1s ease 3s forwards;
+        }
+
+        @keyframes logoReveal { to { opacity: 1; transform: scale(1); } }
+        @keyframes drawLineX { to { transform: scaleX(1); opacity: 0.3; } }
+        @keyframes drawLineY { to { transform: scaleY(1); opacity: 0.3; } }
+        @keyframes fadeIn { to { opacity: 1; } }
+        
+        #intro-overlay.hidden { opacity: 0; visibility: hidden; }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed; top: 0; left: 0; width: 100%;
+            padding: 1.5rem 4vw;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+            background: rgba(244, 241, 234, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(26,24,22,0.1);
+        }
+        .nav-logo {
+            font-family: var(--font-display); font-size: 1.5rem; font-weight: 900;
+            letter-spacing: -0.03em;
+            cursor: pointer;
+        }
+        .nav-links {
+            display: flex; gap: 2rem; align-items: center;
+        }
+        .nav-links a {
+            font-family: var(--font-sans); font-size: 0.75rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.15em;
+            position: relative;
+            cursor: pointer;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -4px; left: 0;
+            width: 0; height: 2px; background: var(--accent);
+            transition: width 0.3s var(--ease);
+        }
+        .nav-links a:hover::after { width: 100%; }
+
+        /* External Order Button */
+        .btn-order {
+            background: var(--accent);
+            color: var(--bg) !important;
+            padding: 0.6rem 1.2rem;
+            border: 1px solid var(--accent);
+            transition: background 0.3s, color 0.3s !important;
+        }
+        .btn-order::after { display: none !important; }
+        .btn-order:hover {
+            background: var(--ink);
+            border-color: var(--ink);
+        }
+
+        /* --- LAYOUT UTILITIES --- */
+        .container { padding: 8rem 6vw 4rem; max-width: 1400px; margin: 0 auto; }
+        .section-title {
+            font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900; line-height: 1; letter-spacing: -0.02em;
+            margin-bottom: 3rem; text-transform: uppercase;
+        }
+        
+        /* --- HOME PAGE --- */
+        .hero {
+            min-height: 90vh; display: flex; flex-direction: column; justify-content: center;
+            padding: 8rem 6vw 4rem;
+        }
+        .hero-top {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end;
+            margin-bottom: 4rem;
+        }
+        .hero-title {
+            font-family: var(--font-display); font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 900; line-height: 0.9; letter-spacing: -0.04em;
+            text-transform: uppercase;
+        }
+        .hero-title .italic {
+            font-family: var(--font-display); font-style: italic; font-weight: 400;
+            text-transform: none; color: var(--accent);
+        }
+        .hero-desc {
+            font-size: 1.1rem; color: var(--ink-light); max-width: 400px;
+            margin-bottom: 2rem;
+        }
+        .hero-image-wrapper {
+            width: 100%; height: 50vh; overflow: hidden;
+            border: 1px solid rgba(26,24,22,0.1);
+        }
+        .hero-image-wrapper img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 1s var(--ease);
+        }
+        .hero-image-wrapper:hover img { transform: scale(1.05); }
+
+        /* --- MARQUEE --- */
+        .marquee {
+            width: 100%; 
+            overflow: hidden; 
+            background: var(--ink); 
+            color: var(--bg);
+            padding: 1rem 0; 
+            display: flex;
+            white-space: nowrap; 
+            margin: 4rem 0;
+        }
+        .marquee-content {
+            display: flex;
+            animation: marquee 25s linear infinite;
+        }
+        .marquee-text {
+            font-family: var(--font-sans); 
+            font-size: 0.8rem; 
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding-right: 2rem; /* Space between loops */
+        }
+        @keyframes marquee { 
+            0% { transform: translateX(0); } 
+            100% { transform: translateX(-50%); } 
+        }
+
+        /* --- PORTFOLIO PAGE --- */
+        .portfolio-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 4rem;
+        }
+        .portfolio-item {
+            display: flex; flex-direction: column; gap: 1rem;
+            cursor: pointer;
+        }
+        .portfolio-img {
+            width: 100%; aspect-ratio: 4/3; background: #ddd; overflow: hidden;
+            position: relative;
+        }
+        .portfolio-img img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.8s var(--ease), filter 0.8s var(--ease);
+            filter: grayscale(20%);
+        }
+        .portfolio-item:hover .portfolio-img img {
+            transform: scale(1.05); filter: grayscale(0%);
+        }
+        .portfolio-meta {
+            display: flex; justify-content: space-between; align-items: baseline;
+            border-bottom: 1px solid rgba(26,24,22,0.2); padding-bottom: 0.5rem;
+        }
+        .portfolio-meta h3 {
+            font-family: var(--font-display); font-size: 1.8rem;
+        }
+        .portfolio-meta span {
+            font-family: var(--font-sans); font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 0.1em; color: var(--accent);
+        }
+
+        /* --- CONTACT PAGE --- */
+        .contact-wrapper {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 6rem;
+        }
+        .contact-info h2 {
+            font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 900; line-height: 1; margin-bottom: 2rem;
+        }
+        .contact-detail {
+            margin-bottom: 2rem;
+        }
+        .contact-detail .label {
+            font-family: var(--font-sans); font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 0.2em; color: var(--accent); margin-bottom: 0.5rem;
+        }
+        .contact-detail .value {
+            font-size: 1.2rem;
+        }
+        .contact-form {
+            display: flex; flex-direction: column; gap: 1.5rem;
+        }
+        .input-group {
+            display: flex; flex-direction: column; gap: 0.5rem;
+        }
+        .input-group label {
+            font-family: var(--font-sans); font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%; padding: 1rem; background: transparent;
+            border: 1px solid rgba(26,24,22,0.2); font-family: var(--font-body);
+            font-size: 1rem; outline: none; transition: border-color 0.3s;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            border-color: var(--accent);
+        }
+        .submit-btn {
+            background: var(--ink); color: var(--bg); border: none;
+            padding: 1.2rem; font-family: var(--font-sans); text-transform: uppercase;
+            letter-spacing: 0.1em; font-weight: 600; cursor: pointer;
+            transition: background 0.3s;
+        }
+        .submit-btn:hover { background: var(--accent); }
+
+        /* --- FOOTER --- */
+        footer {
+            border-top: 1px solid rgba(26,24,22,0.1); padding: 3rem 6vw;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 2rem;
+        }
+        .footer-logo {
+            font-family: var(--font-display); font-weight: 900; font-size: 1.5rem;
+        }
+        .footer-copy {
+            font-size: 0.8rem; color: var(--ink-light);
+        }
+        .footer-socials {
+            display: flex; gap: 1.5rem;
+        }
+        .footer-socials a {
+            font-family: var(--font-sans); font-size: 0.75rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 900px) {
+            .hero-top { grid-template-columns: 1fr; }
+            .portfolio-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .contact-wrapper { grid-template-columns: 1fr; gap: 3rem; }
+            .nav-links { display: none; } 
+            
+            /* Intro Mobile Adjustments */
+            .intro-logo-container { width: 95vw; padding: 1rem; }
+            .intro-text { font-size: 8vw; line-height: 1.2; }
+            .mt-left, .mt-right { display: none; } /* Hide vertical text to save space on small screens */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CINEMATIC INTRO OVERLAY -->
+    <div id="intro-overlay">
+        <div class="intro-grid"></div>
+        
+        <div class="intro-logo-container">
+            <!-- Measurement Lines -->
+            <div class="measure-line m-top"></div>
+            <div class="measure-line m-bottom"></div>
+            <div class="measure-line m-left"></div>
+            <div class="measure-line m-right"></div>
+            
+            <!-- Measurement Text -->
+            <div class="measure-text mt-top">Scale 1:1</div>
+            <div class="measure-text mt-bottom">Baseline</div>
+            <div class="measure-text mt-left">Kerning</div>
+            <div class="measure-text mt-right">X-Height</div>
+
+            <!-- The Dynamic Logo Text -->
+            <div class="intro-text font-1 color-ink" id="intro-logo">
+                Melissa <br> Adjarkie Adjanor
+            </div>
+
+            <!-- Colour Swatches -->
+            <div class="swatches">
+                <div class="swatch">
+                    <div class="swatch-circle c-red"></div>
+                    <span class="swatch-text">#8A1919</span>
+                </div>
+                <div class="swatch">
+                    <div class="swatch-circle c-gold"></div>
+                    <span class="swatch-text">#D9A05B</span>
+                </div>
+                <div class="swatch">
+                    <div class="swatch-circle c-ink"></div>
+                    <span class="swatch-text">#1A1816</span>
+                </div>
+                <div class="swatch">
+                    <div class="swatch-circle c-bg"></div>
+                    <span class="swatch-text">#F4F1EA</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="intro-sub">Graphic Designer &bull; Accra, Ghana</div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="nav-logo" onclick="showPage('home')">Melissa Adjarkie Adjanor.</div>
+        <div class="nav-links">
+            <a onclick="showPage('home')">Home</a>
+            <a onclick="showPage('portfolio')">Portfolio</a>
+            <a onclick="showPage('contact')">Contact</a>
+            <!-- Direct link to order services -->
+            <a href="https://www.adissacreativestudio.com" target="_blank" class="btn-order">Order Services ↗</a>
+        </div>
+    </nav>
+
+    <!-- ==================== HOME PAGE ==================== -->
+    <main id="home" class="page active">
+        <section class="hero">
+            <div class="hero-top">
+                <div>
+                    <h1 class="hero-title">Your Vision,<br><span class="italic">Our Design.</span></h1>
+                </div>
+                <div>
+                    <p class="hero-desc">Welcome to the portfolio of Melissa Adjarkie Adjanor. I offer high-quality design services to help your business stand out.</p>
+                    <a href="https://www.adissacreativestudio.com" target="_blank" style="font-family: var(--font-sans); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 2px solid var(--accent); padding-bottom: 0.3rem;">Place an Order ↗</a>
+                </div>
+            </div>
+            <div class="hero-image-wrapper">
+                <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop" alt="Creative Design Workspace">
+            </div>
+        </section>
+
+        <!-- INFINITE MARQUEE -->
+        <div class="marquee">
+            <div class="marquee-content">
+                <span class="marquee-text">
+                    Branding &bull; Visual Identity &bull; Print Design &bull; Event Merchandise &bull; Digital Graphics &bull; Branding &bull; Visual Identity &bull; Print Design &bull; Event Merchandise &bull; Digital Graphics &bull; 
+                </span>
+                <!-- Duplicated for seamless looping -->
+                <span class="marquee-text">
+                    Branding &bull; Visual Identity &bull; Print Design &bull; Event Merchandise &bull; Digital Graphics &bull; Branding &bull; Visual Identity &bull; Print Design &bull; Event Merchandise &bull; Digital Graphics &bull; 
+                </span>
+            </div>
+        </div>
+
+        <section class="container">
+            <h2 class="section-title">The Designer</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;">
+                <div>
+                    <p style="font-size: 1.2rem; font-weight: 500; margin-bottom: 1.5rem;">"I've been designing for 4 years, driven by a passion for creativity and innovation."</p>
+                    <p style="color: var(--ink-light); margin-bottom: 1rem;">As a self-taught designer, I've navigated the challenges of balancing my creative vision with the need for precision and refinement. This journey has not only expanded my skills but also deepened my understanding of both the design process and myself.</p>
+                    <p style="color: var(--ink-light); margin-bottom: 2rem;">Whether you are launching a new business, hosting a special event, or looking for custom keepsakes, my studio is here to bring your vision to life.</p>
+                    <a href="https://www.adissacreativestudio.com" target="_blank" class="submit-btn" style="display: inline-block; text-decoration: none;">Visit Studio Site</a>
+                </div>
+                <div>
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" alt="Abstract Design" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== PORTFOLIO PAGE ==================== -->
+    <main id="portfolio" class="page">
+        <section class="container">
+            <h2 class="section-title">Shown Works</h2>
+            <p style="margin-bottom: 3rem; color: var(--ink-light);">A collection of branding, print, and digital projects delivered by Melissa Adjarkie Adjanor.</p>
+
+            <div class="portfolio-grid">
+                <!-- Project 1 -->
+                <div class="portfolio-item">
+                    <div class="portfolio-img">
+                        <img src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?q=80&w=1000&auto=format&fit=crop" alt="H4SN Logo">
+                    </div>
+                    <div class="portfolio-meta">
+                        <h3>H4SN NGO Identity</h3>
+                        <span>Logo & Merchandise • 2022</span>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="portfolio-item">
+                    <div class="portfolio-img">
+                        <img src="https://images.unsplash.com/photo-1544531585-9847b68c8c86?q=80&w=1000&auto=format&fit=crop" alt="Carnifest">
+                    </div>
+                    <div class="portfolio-meta">
+                        <h3>Carnifest Event Campaign</h3>
+                        <span>Event Promo & Flyers • 2023</span>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="portfolio-item">
+                    <div class="portfolio-img">
+                        <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop" alt="Solar Lights">
+                    </div>
+                    <div class="portfolio-meta">
+                        <h3>ChipLinx Solar Products</h3>
+                        <span>Flyer & Social Media • 2024</span>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="portfolio-item">
+                    <div class="portfolio-img">
+                        <img src="https://images.unsplash.com/photo-1512418490979-92798cec1380?q=80&w=1000&auto=format&fit=crop" alt="Memorial Design">
+                    </div>
+                    <div class="portfolio-meta">
+                        <h3>Funeral Brochure & Banner</h3>
+                        <span>Print & Editorial • 2025</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 5rem;">
+                <p style="margin-bottom: 1.5rem; font-family: var(--font-sans); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;">Looking for pricing and packages?</p>
+                <a href="https://www.adissacreativestudio.com" target="_blank" class="submit-btn" style="display: inline-block; text-decoration: none; padding: 1rem 3rem;">Order Services on the Studio Site ↗</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== CONTACT PAGE ==================== -->
+    <main id="contact" class="page">
+        <section class="container">
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <h2>Let's Work Together.</h2>
+                    
+                    <div class="contact-detail">
+                        <div class="label">Business Email</div>
+                        <div class="value"><a href="mailto:adissagraphicdesign@gmail.com">adissagraphicdesign@gmail.com</a></div>
+                    </div>
+
+                    <div class="contact-detail">
+                        <div class="label">Personal / Opportunities</div>
+                        <div class="value"><a href="mailto:adjarkie.melissa@gmail.com">adjarkie.melissa@gmail.com</a></div>
+                    </div>
+
+                    <div class="contact-detail">
+                        <div class="label">WhatsApp Business</div>
+                        <div class="value"><a href="https://wa.me/233242234042" target="_blank">+233 24 223 4042</a></div>
+                    </div>
+                    
+                    <div class="contact-detail">
+                        <div class="label">Location</div>
+                        <div class="value">Accra, Ghana</div>
+                    </div>
+                    
+                    <div class="contact-detail">
+                        <div class="label">Socials & Portals</div>
+                        <div class="value">
+                            <a href="https://www.adissacreativestudio.com" target="_blank" style="text-decoration: underline; text-decoration-color: var(--accent);">Studio Website</a><br>
+                            <a href="#" style="text-decoration: underline; text-decoration-color: var(--accent);">Instagram</a><br>
+                            <a href="#" style="text-decoration: underline; text-decoration-color: var(--accent);">TikTok</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form">
+                    <div class="input-group">
+                        <label>Name</label>
+                        <input type="text" placeholder="Your name">
+                    </div>
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input type="email" placeholder="your@email.com">
+                    </div>
+                    <div class="input-group">
+                        <label>Project Details</label>
+                        <textarea rows="5" placeholder="Tell me about your design needs..."></textarea>
+                    </div>
+                    <button class="submit-btn" onclick="alert('For immediate orders and inquiries, please visit www.adissacreativestudio.com or reach out on WhatsApp.')">Send Message</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER (Present on all pages) -->
+    <footer>
+        <div class="footer-logo">Melissa Adjarkie Adjanor.</div>
+        <div class="footer-copy">
+            &copy; 2026 Melissa Adjarkie Adjanor. All rights reserved.
+        </div>
+        <div class="footer-socials">
+            <a href="#">Instagram</a>
+            <a href="#">LinkedIn</a>
+            <a href="mailto:adjarkie.melissa@gmail.com">Email</a>
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. CINEMATIC INTRO LOGIC (Font & Color Shifting) ---
+        window.addEventListener('load', () => {
+            const intro = document.getElementById('intro-overlay');
+            const logo = document.getElementById('intro-logo');
+            
+            // Arrays of styles to cycle through
+            const fonts = ['font-1', 'font-2', 'font-3', 'font-4', 'font-5'];
+            const colors = ['color-ink', 'color-red', 'color-gold', 'color-ink'];
+            
+            let fontIndex = 0;
+            let colorIndex = 0;
+            
+            // Shift fonts and colors every 300ms
+            const interval = setInterval(() => {
+                // Remove current styles
+                logo.classList.remove(...fonts);
+                logo.classList.remove(...colors);
+                
+                // Add next styles
+                fontIndex = (fontIndex + 1) % fonts.length;
+                colorIndex = (colorIndex + 1) % colors.length;
+                
+                logo.classList.add(fonts[fontIndex]);
+                logo.classList.add(colors[colorIndex]);
+            }, 300);
+
+            // Stop cycling and hide intro after 4.5 seconds
+            setTimeout(() => {
+                clearInterval(interval);
+                intro.classList.add('hidden');
+            }, 4500);
+        });
+
+        // --- 2. MULTI-PAGE NAVIGATION LOGIC ---
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show selected page
+            const target = document.getElementById(pageId);
+            if (target) {
+                target.classList.add('active');
+            }
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // --- 3. SCROLL ANIMATIONS (Simple Reveal) ---
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Apply to all portfolio items
+        document.querySelectorAll('.portfolio-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
