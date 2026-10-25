@@ -1,697 +1,315 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Melissa Adjarkie Adjanor | Portfolio</title>
-    
-    <!-- Fonts: Multiple families included for the shifting intro animation -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Space+Grotesk:wght@300..700&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
-
-    <style>
-        /* --- CSS VARIABLES --- */
-        :root {
-            --bg: #F4F1EA;
-            --bg-dark: #1A1816;
-            --ink: #1A1816;
-            --ink-light: #5C5854;
-            --accent: #8A1919; /* Deep Adissa Red */
-            --accent-gold: #D9A05B;
-            --font-display: 'Bodoni Moda', serif;
-            --font-sans: 'Syne', sans-serif;
-            --font-body: 'DM Sans', sans-serif;
-            --ease: cubic-bezier(0.76, 0, 0.24, 1);
-        }
-
-        /* --- RESET & BASE --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body {
-            background-color: var(--bg);
-            color: var(--ink);
-            font-family: var(--font-body);
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-        a { text-decoration: none; color: inherit; }
-        ul { list-style: none; }
-        img { max-width: 100%; display: block; }
-
-        /* --- PAGE TRANSITION SYSTEM --- */
-        .page {
-            display: none;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
-        }
-        .page.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- CINEMATIC INTRO ANIMATION --- */
-        #intro-overlay {
-            position: fixed; inset: 0;
-            background: var(--bg);
-            z-index: 9999;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
-            transition: opacity 1s var(--ease), visibility 1s;
-        }
-        .intro-grid {
-            position: absolute; inset: 0;
-            background-image: 
-                linear-gradient(to right, rgba(26,24,22,0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(26,24,22,0.05) 1px, transparent 1px);
-            background-size: 10vw 10vh;
-            opacity: 0;
-            animation: fadeIn 1s ease 0.5s forwards;
-        }
-        
-        /* The Wrapper that holds the text and the lines */
-        .intro-logo-container {
-            position: relative;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 1.5rem;
-            width: 90vw;
-            max-width: 1200px;
-            /* Box shadow to act as a faint bounding box */
-            box-shadow: 0 0 0 1px rgba(138, 25, 25, 0.1); 
-        }
-        
-        /* Dynamic Intro Text */
-        .intro-text {
-            text-align: center;
-            opacity: 0;
-            transform: scale(0.95);
-            animation: logoReveal 1.5s var(--ease) 0.8s forwards;
-            transition: font-family 0.2s, color 0.2s, font-style 0.2s, font-size 0.2s, letter-spacing 0.2s;
-            line-height: 1.1;
-            word-wrap: break-word;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Font and Size Classes injected by JS */
-        .font-1 { font-family: 'Bodoni Moda', serif; font-style: normal; font-size: clamp(2.5rem, 8vw, 7rem); letter-spacing: -0.02em; font-weight: 900; }
-        .font-2 { font-family: 'Space Grotesk', sans-serif; font-style: normal; font-size: clamp(2rem, 7vw, 6rem); letter-spacing: -0.01em; font-weight: 700; }
-        .font-3 { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(3rem, 9vw, 8rem); letter-spacing: 0.02em; font-weight: 500; }
-        .font-4 { font-family: 'Syne', sans-serif; font-style: normal; font-size: clamp(1.8rem, 6vw, 5.5rem); letter-spacing: 0.05em; font-weight: 800; }
-        .font-5 { font-family: 'Playfair Display', serif; font-style: normal; font-size: clamp(2.5rem, 7.5vw, 6.5rem); letter-spacing: -0.03em; font-weight: 700; }
-
-        .color-red { color: var(--accent); }
-        .color-gold { color: var(--accent-gold); }
-        .color-ink { color: var(--ink); }
-
-        /* Measurement Lines - Absolute to the container */
-        .measure-line {
-            position: absolute;
-            background: var(--accent);
-            opacity: 0;
-        }
-        .m-top { top: 0; left: 0; width: 100%; height: 1px; transform: scaleX(0); transform-origin: left; animation: drawLineX 1s var(--ease) 1.5s forwards; }
-        .m-bottom { bottom: 0; left: 0; width: 100%; height: 1px; transform: scaleX(0); transform-origin: right; animation: drawLineX 1s var(--ease) 1.5s forwards; }
-        .m-left { left: 0; top: 0; width: 1px; height: 100%; transform: scaleY(0); transform-origin: top; animation: drawLineY 1s var(--ease) 1.5s forwards; }
-        .m-right { right: 0; top: 0; width: 1px; height: 100%; transform: scaleY(0); transform-origin: bottom; animation: drawLineY 1s var(--ease) 1.5s forwards; }
-        
-        .measure-text {
-            position: absolute;
-            font-family: var(--font-sans);
-            font-size: 0.55rem;
-            letter-spacing: 0.1em;
-            color: var(--accent);
-            opacity: 0;
-            animation: fadeIn 0.5s ease 2.5s forwards;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-        .mt-top { top: -20px; left: 50%; transform: translateX(-50%); }
-        .mt-bottom { bottom: -20px; left: 50%; transform: translateX(-50%); }
-        .mt-left { left: -30px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
-        .mt-right { right: -30px; top: 50%; transform: translateY(-50%) rotate(90deg); }
-
-        /* Colour Swatches */
-        .swatches {
-            position: absolute; bottom: -50px; left: 0; width: 100%;
-            display: flex; justify-content: space-between; padding: 0 10px;
-            opacity: 0; animation: fadeIn 0.5s ease 2.8s forwards;
-        }
-        .swatch { display: flex; align-items: center; gap: 6px; }
-        .swatch-circle { width: 10px; height: 10px; border-radius: 50%; }
-        .swatch-text { font-family: var(--font-sans); font-size: 0.45rem; letter-spacing: 0.1em; }
-        .c-red { background: var(--accent); }
-        .c-gold { background: var(--accent-gold); }
-        .c-ink { background: var(--ink); }
-        .c-bg { background: var(--bg-dark); }
-
-        .intro-sub {
-            position: absolute; bottom: 10vh;
-            font-family: var(--font-sans); font-size: 0.7rem; letter-spacing: 0.3em;
-            text-transform: uppercase; color: var(--ink-light); text-align: center;
-            opacity: 0; animation: fadeIn 1s ease 3s forwards;
-        }
-
-        @keyframes logoReveal { to { opacity: 1; transform: scale(1); } }
-        @keyframes drawLineX { to { transform: scaleX(1); opacity: 0.3; } }
-        @keyframes drawLineY { to { transform: scaleY(1); opacity: 0.3; } }
-        @keyframes fadeIn { to { opacity: 1; } }
-        
-        #intro-overlay.hidden { opacity: 0; visibility: hidden; }
-
-        /* --- NAVIGATION --- */
-        nav {
-            position: fixed; top: 0; left: 0; width: 100%;
-            padding: 1.5rem 4vw;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 100;
-            background: rgba(244, 241, 234, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(26,24,22,0.1);
-        }
-        .nav-logo {
-            font-family: var(--font-display); font-size: 1.5rem; font-weight: 900;
-            letter-spacing: -0.03em;
-            cursor: pointer;
-        }
-        .nav-links {
-            display: flex; gap: 2rem; align-items: center;
-        }
-        .nav-links a {
-            font-family: var(--font-sans); font-size: 0.75rem; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 0.15em;
-            position: relative;
-            cursor: pointer;
-        }
-        .nav-links a::after {
-            content: ''; position: absolute; bottom: -4px; left: 0;
-            width: 0; height: 2px; background: var(--accent);
-            transition: width 0.3s var(--ease);
-        }
-        .nav-links a:hover::after { width: 100%; }
-
-        /* External Order Button */
-        .btn-order {
-            background: var(--accent);
-            color: var(--bg) !important;
-            padding: 0.6rem 1.2rem;
-            border: 1px solid var(--accent);
-            transition: background 0.3s, color 0.3s !important;
-        }
-        .btn-order::after { display: none !important; }
-        .btn-order:hover {
-            background: var(--ink);
-            border-color: var(--ink);
-        }
-
-        /* --- LAYOUT UTILITIES --- */
-        .container { padding: 8rem 6vw 4rem; max-width: 1400px; margin: 0 auto; }
-        .section-title {
-            font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 5rem);
-            font-weight: 900; line-height: 1; letter-spacing: -0.02em;
-            margin-bottom: 3rem; text-transform: uppercase;
-        }
-        
-        /* --- HOME PAGE --- */
-        .hero {
-            min-height: 90vh; display: flex; flex-direction: column; justify-content: center;
-            padding: 8rem 6vw 4rem;
-        }
-        .hero-top {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end;
-            margin-bottom: 4rem;
-        }
-        .hero-title {
-            font-family: var(--font-display); font-size: clamp(3rem, 8vw, 7rem);
-            font-weight: 900; line-height: 0.9; letter-spacing: -0.04em;
-            text-transform: uppercase;
-        }
-        .hero-title .italic {
-            font-family: var(--font-display); font-style: italic; font-weight: 400;
-            text-transform: none; color: var(--accent);
-        }
-        .hero-desc {
-            font-size: 1.1rem; color: var(--ink-light); max-width: 400px;
-            margin-bottom: 2rem;
-        }
-        .hero-image-wrapper {
-            width: 100%; height: 50vh; overflow: hidden;
-            border: 1px solid rgba(26,24,22,0.1);
-        }
-        .hero-image-wrapper img {
-            width: 100%; height: 100%; object-fit: cover;
-            transition: transform 1s var(--ease);
-        }
-        .hero-image-wrapper:hover img { transform: scale(1.05); }
-
-        /* --- MARQUEE --- */
-        .marquee {
-            width: 100%; 
-            overflow: hidden; 
-            background: var(--ink); 
-            color: var(--bg);
-            padding: 1rem 0; 
-            display: flex;
-            white-space: nowrap; 
-            margin: 4rem 0;
-        }
-        .marquee-content {
-            display: flex;
-            animation: marquee 25s linear infinite;
-        }
-        .marquee-text {
-            font-family: var(--font-sans); 
-            font-size: 0.8rem; 
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            padding-right: 2rem; /* Space between loops */
-        }
-        @keyframes marquee { 
-            0% { transform: translateX(0); } 
-            100% { transform: translateX(-50%); } 
-        }
-
-        /* --- PORTFOLIO PAGE --- */
-        .portfolio-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 4rem;
-        }
-        .portfolio-item {
-            display: flex; flex-direction: column; gap: 1rem;
-            cursor: pointer;
-        }
-        .portfolio-img {
-            width: 100%; aspect-ratio: 4/3; background: #ddd; overflow: hidden;
-            position: relative;
-        }
-        .portfolio-img img {
-            width: 100%; height: 100%; object-fit: cover;
-            transition: transform 0.8s var(--ease), filter 0.8s var(--ease);
-            filter: grayscale(20%);
-        }
-        .portfolio-item:hover .portfolio-img img {
-            transform: scale(1.05); filter: grayscale(0%);
-        }
-        .portfolio-meta {
-            display: flex; justify-content: space-between; align-items: baseline;
-            border-bottom: 1px solid rgba(26,24,22,0.2); padding-bottom: 0.5rem;
-        }
-        .portfolio-meta h3 {
-            font-family: var(--font-display); font-size: 1.8rem;
-        }
-        .portfolio-meta span {
-            font-family: var(--font-sans); font-size: 0.7rem; text-transform: uppercase;
-            letter-spacing: 0.1em; color: var(--accent);
-        }
-
-        /* --- CONTACT PAGE --- */
-        .contact-wrapper {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 6rem;
-        }
-        .contact-info h2 {
-            font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem);
-            font-weight: 900; line-height: 1; margin-bottom: 2rem;
-        }
-        .contact-detail {
-            margin-bottom: 2rem;
-        }
-        .contact-detail .label {
-            font-family: var(--font-sans); font-size: 0.7rem; text-transform: uppercase;
-            letter-spacing: 0.2em; color: var(--accent); margin-bottom: 0.5rem;
-        }
-        .contact-detail .value {
-            font-size: 1.2rem;
-        }
-        .contact-form {
-            display: flex; flex-direction: column; gap: 1.5rem;
-        }
-        .input-group {
-            display: flex; flex-direction: column; gap: 0.5rem;
-        }
-        .input-group label {
-            font-family: var(--font-sans); font-size: 0.7rem; text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-        .input-group input, .input-group textarea {
-            width: 100%; padding: 1rem; background: transparent;
-            border: 1px solid rgba(26,24,22,0.2); font-family: var(--font-body);
-            font-size: 1rem; outline: none; transition: border-color 0.3s;
-        }
-        .input-group input:focus, .input-group textarea:focus {
-            border-color: var(--accent);
-        }
-        .submit-btn {
-            background: var(--ink); color: var(--bg); border: none;
-            padding: 1.2rem; font-family: var(--font-sans); text-transform: uppercase;
-            letter-spacing: 0.1em; font-weight: 600; cursor: pointer;
-            transition: background 0.3s;
-        }
-        .submit-btn:hover { background: var(--accent); }
-
-        /* --- FOOTER --- */
-        footer {
-            border-top: 1px solid rgba(26,24,22,0.1); padding: 3rem 6vw;
-            display: flex; justify-content: space-between; align-items: center;
-            flex-wrap: wrap; gap: 2rem;
-        }
-        .footer-logo {
-            font-family: var(--font-display); font-weight: 900; font-size: 1.5rem;
-        }
-        .footer-copy {
-            font-size: 0.8rem; color: var(--ink-light);
-        }
-        .footer-socials {
-            display: flex; gap: 1.5rem;
-        }
-        .footer-socials a {
-            font-family: var(--font-sans); font-size: 0.75rem; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 0.1em;
-        }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 900px) {
-            .hero-top { grid-template-columns: 1fr; }
-            .portfolio-grid { grid-template-columns: 1fr; gap: 2rem; }
-            .contact-wrapper { grid-template-columns: 1fr; gap: 3rem; }
-            .nav-links { display: none; } 
-            
-            /* Intro Mobile Adjustments */
-            .intro-logo-container { width: 95vw; padding: 1rem; }
-            .intro-text { font-size: 8vw; line-height: 1.2; }
-            .mt-left, .mt-right { display: none; } /* Hide vertical text to save space on small screens */
-        }
-    </style>
-</head>
-<body>
-
-    <!-- CINEMATIC INTRO OVERLAY -->
-    <div id="intro-overlay">
-        <div class="intro-grid"></div>
-        
-        <div class="intro-logo-container">
-            <!-- Measurement Lines -->
-            <div class="measure-line m-top"></div>
-            <div class="measure-line m-bottom"></div>
-            <div class="measure-line m-left"></div>
-            <div class="measure-line m-right"></div>
-            
-            <!-- Measurement Text -->
-            <div class="measure-text mt-top">Scale 1:1</div>
-            <div class="measure-text mt-bottom">Baseline</div>
-            <div class="measure-text mt-left">Kerning</div>
-            <div class="measure-text mt-right">X-Height</div>
-
-            <!-- The Dynamic Logo Text -->
-            <div class="intro-text font-1 color-ink" id="intro-logo">
-                Melissa <br> Adjarkie Adjanor
-            </div>
-
-            <!-- Colour Swatches -->
-            <div class="swatches">
-                <div class="swatch">
-                    <div class="swatch-circle c-red"></div>
-                    <span class="swatch-text">#8A1919</span>
-                </div>
-                <div class="swatch">
-                    <div class="swatch-circle c-gold"></div>
-                    <span class="swatch-text">#D9A05B</span>
-                </div>
-                <div class="swatch">
-                    <div class="swatch-circle c-ink"></div>
-                    <span class="swatch-text">#1A1816</span>
-                </div>
-                <div class="swatch">
-                    <div class="swatch-circle c-bg"></div>
-                    <span class="swatch-text">#F4F1EA</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="intro-sub">Graphic Designer &bull; Accra, Ghana</div>
-    </div>
-
-    <!-- NAVIGATION -->
-    <nav>
-        <div class="nav-logo" onclick="showPage('home')">Melissa Adjarkie Adjanor.</div>
-        <div class="nav-links">
-            <a onclick="showPage('home')">Home</a>
-            <a onclick="showPage('portfolio')">Portfolio</a>
-            <a onclick="showPage('contact')">Contact</a>
-            <!-- Direct link to order services -->
-            <a href="https://www.adissacreativestudio.com" target="_blank" class="btn-order">Order Services ↗</a>
-        </div>
-    </nav>
-
-    <!-- ==================== HOME PAGE ==================== -->
-    <main id="home" class="page active">
-        <section class="hero">
-            <div class="hero-top">
-                <div>
-                    <h1 class="hero-title">Your Vision,<br><span class="italic">Our Design.</span></h1>
-                </div>
-                <div>
-                    <p class="hero-desc">Welcome to the portfolio of Melissa Adjarkie Adjanor. I offer high-quality design services to help your business stand out.</p>
-                    <a href="https://www.adissacreativestudio.com" target="_blank" style="font-family: var(--font-sans); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 2px solid var(--accent); padding-bottom: 0.3rem;">Place an Order ↗</a>
-                </div>
-            </div>
-            <div class="hero-image-wrapper">
-                <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop" alt="Creative Design Workspace">
-            </div>
-        </section>
-
-        <!-- INFINITE MARQUEE -->
-        <div class="marquee">
-            <div class="marquee-content">
-                <span class="marquee-text">
-                    Branding &bull; Visual Identity &bull; Print Design &bull; Event Merchandise &bull; Digital Graphics &bull; Branding &bull; Visual Identity &bull; Print Design &bull; Event Merchandise &bull; Digital Graphics &bull; 
-                </span>
-                <!-- Duplicated for seamless looping -->
-                <span class="marquee-text">
-                    Branding &bull; Visual Identity &bull; Print Design &bull; Event Merchandise &bull; Digital Graphics &bull; Branding &bull; Visual Identity &bull; Print Design &bull; Event Merchandise &bull; Digital Graphics &bull; 
-                </span>
-            </div>
-        </div>
-
-        <section class="container">
-            <h2 class="section-title">The Designer</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;">
-                <div>
-                    <p style="font-size: 1.2rem; font-weight: 500; margin-bottom: 1.5rem;">"I've been designing for 4 years, driven by a passion for creativity and innovation."</p>
-                    <p style="color: var(--ink-light); margin-bottom: 1rem;">As a self-taught designer, I've navigated the challenges of balancing my creative vision with the need for precision and refinement. This journey has not only expanded my skills but also deepened my understanding of both the design process and myself.</p>
-                    <p style="color: var(--ink-light); margin-bottom: 2rem;">Whether you are launching a new business, hosting a special event, or looking for custom keepsakes, my studio is here to bring your vision to life.</p>
-                    <a href="https://www.adissacreativestudio.com" target="_blank" class="submit-btn" style="display: inline-block; text-decoration: none;">Visit Studio Site</a>
-                </div>
-                <div>
-                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" alt="Abstract Design" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- ==================== PORTFOLIO PAGE ==================== -->
-    <main id="portfolio" class="page">
-        <section class="container">
-            <h2 class="section-title">Shown Works</h2>
-            <p style="margin-bottom: 3rem; color: var(--ink-light);">A collection of branding, print, and digital projects delivered by Melissa Adjarkie Adjanor.</p>
-
-            <div class="portfolio-grid">
-                <!-- Project 1 -->
-                <div class="portfolio-item">
-                    <div class="portfolio-img">
-                        <img src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?q=80&w=1000&auto=format&fit=crop" alt="H4SN Logo">
-                    </div>
-                    <div class="portfolio-meta">
-                        <h3>H4SN NGO Identity</h3>
-                        <span>Logo & Merchandise • 2022</span>
-                    </div>
-                </div>
-
-                <!-- Project 2 -->
-                <div class="portfolio-item">
-                    <div class="portfolio-img">
-                        <img src="https://images.unsplash.com/photo-1544531585-9847b68c8c86?q=80&w=1000&auto=format&fit=crop" alt="Carnifest">
-                    </div>
-                    <div class="portfolio-meta">
-                        <h3>Carnifest Event Campaign</h3>
-                        <span>Event Promo & Flyers • 2023</span>
-                    </div>
-                </div>
-
-                <!-- Project 3 -->
-                <div class="portfolio-item">
-                    <div class="portfolio-img">
-                        <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop" alt="Solar Lights">
-                    </div>
-                    <div class="portfolio-meta">
-                        <h3>ChipLinx Solar Products</h3>
-                        <span>Flyer & Social Media • 2024</span>
-                    </div>
-                </div>
-
-                <!-- Project 4 -->
-                <div class="portfolio-item">
-                    <div class="portfolio-img">
-                        <img src="https://images.unsplash.com/photo-1512418490979-92798cec1380?q=80&w=1000&auto=format&fit=crop" alt="Memorial Design">
-                    </div>
-                    <div class="portfolio-meta">
-                        <h3>Funeral Brochure & Banner</h3>
-                        <span>Print & Editorial • 2025</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 5rem;">
-                <p style="margin-bottom: 1.5rem; font-family: var(--font-sans); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;">Looking for pricing and packages?</p>
-                <a href="https://www.adissacreativestudio.com" target="_blank" class="submit-btn" style="display: inline-block; text-decoration: none; padding: 1rem 3rem;">Order Services on the Studio Site ↗</a>
-            </div>
-        </section>
-    </main>
-
-    <!-- ==================== CONTACT PAGE ==================== -->
-    <main id="contact" class="page">
-        <section class="container">
-            <div class="contact-wrapper">
-                <div class="contact-info">
-                    <h2>Let's Work Together.</h2>
-                    
-                    <div class="contact-detail">
-                        <div class="label">Business Email</div>
-                        <div class="value"><a href="mailto:adissagraphicdesign@gmail.com">adissagraphicdesign@gmail.com</a></div>
-                    </div>
-
-                    <div class="contact-detail">
-                        <div class="label">Personal / Opportunities</div>
-                        <div class="value"><a href="mailto:adjarkie.melissa@gmail.com">adjarkie.melissa@gmail.com</a></div>
-                    </div>
-
-                    <div class="contact-detail">
-                        <div class="label">WhatsApp Business</div>
-                        <div class="value"><a href="https://wa.me/233242234042" target="_blank">+233 24 223 4042</a></div>
-                    </div>
-                    
-                    <div class="contact-detail">
-                        <div class="label">Location</div>
-                        <div class="value">Accra, Ghana</div>
-                    </div>
-                    
-                    <div class="contact-detail">
-                        <div class="label">Socials & Portals</div>
-                        <div class="value">
-                            <a href="https://www.adissacreativestudio.com" target="_blank" style="text-decoration: underline; text-decoration-color: var(--accent);">Studio Website</a><br>
-                            <a href="#" style="text-decoration: underline; text-decoration-color: var(--accent);">Instagram</a><br>
-                            <a href="#" style="text-decoration: underline; text-decoration-color: var(--accent);">TikTok</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="contact-form">
-                    <div class="input-group">
-                        <label>Name</label>
-                        <input type="text" placeholder="Your name">
-                    </div>
-                    <div class="input-group">
-                        <label>Email</label>
-                        <input type="email" placeholder="your@email.com">
-                    </div>
-                    <div class="input-group">
-                        <label>Project Details</label>
-                        <textarea rows="5" placeholder="Tell me about your design needs..."></textarea>
-                    </div>
-                    <button class="submit-btn" onclick="alert('For immediate orders and inquiries, please visit www.adissacreativestudio.com or reach out on WhatsApp.')">Send Message</button>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- FOOTER (Present on all pages) -->
-    <footer>
-        <div class="footer-logo">Melissa Adjarkie Adjanor.</div>
-        <div class="footer-copy">
-            &copy; 2026 Melissa Adjarkie Adjanor. All rights reserved.
-        </div>
-        <div class="footer-socials">
-            <a href="#">Instagram</a>
-            <a href="#">LinkedIn</a>
-            <a href="mailto:adjarkie.melissa@gmail.com">Email</a>
-        </div>
-    </footer>
-
-    <script>
-        // --- 1. CINEMATIC INTRO LOGIC (Font & Color Shifting) ---
-        window.addEventListener('load', () => {
-            const intro = document.getElementById('intro-overlay');
-            const logo = document.getElementById('intro-logo');
-            
-            // Arrays of styles to cycle through
-            const fonts = ['font-1', 'font-2', 'font-3', 'font-4', 'font-5'];
-            const colors = ['color-ink', 'color-red', 'color-gold', 'color-ink'];
-            
-            let fontIndex = 0;
-            let colorIndex = 0;
-            
-            // Shift fonts and colors every 300ms
-            const interval = setInterval(() => {
-                // Remove current styles
-                logo.classList.remove(...fonts);
-                logo.classList.remove(...colors);
-                
-                // Add next styles
-                fontIndex = (fontIndex + 1) % fonts.length;
-                colorIndex = (colorIndex + 1) % colors.length;
-                
-                logo.classList.add(fonts[fontIndex]);
-                logo.classList.add(colors[colorIndex]);
-            }, 300);
-
-            // Stop cycling and hide intro after 4.5 seconds
-            setTimeout(() => {
-                clearInterval(interval);
-                intro.classList.add('hidden');
-            }, 4500);
-        });
-
-        // --- 2. MULTI-PAGE NAVIGATION LOGIC ---
-        function showPage(pageId) {
-            // Hide all pages
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => {
-                page.classList.remove('active');
-            });
-
-            // Show selected page
-            const target = document.getElementById(pageId);
-            if (target) {
-                target.classList.add('active');
-            }
-
-            // Scroll to top
-            window.scrollTo(0, 0);
-        }
-
-        // --- 3. SCROLL ANIMATIONS (Simple Reveal) ---
-        const observerOptions = {
-            threshold: 0.1
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // Apply to all portfolio items
-        document.querySelectorAll('.portfolio-item').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(el);
-        });
-    </script>
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>The Museum of Melissa Adjanor</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--c:#F5EBDD;--r:#B92F35;--k:#201F1B;--g:#286548;--b:#C6A76B;--s:'Instrument Serif',Georgia,serif;--m:ui-monospace,Menlo,monospace;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;margin:0}html,body{height:100%;background:var(--c);color:var(--k);font:14px Inter,system-ui,sans-serif;overflow:hidden}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.mo,button,.cl{font:11px var(--m);letter-spacing:.08em;text-transform:uppercase}
+button{background:rgba(32,31,27,.82);color:var(--c);border:1px solid var(--b);padding:8px 11px;cursor:pointer;border-radius:2px}
+button:hover,button.on{background:var(--r)}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--b);outline-offset:2px}
+#top{position:fixed;z-index:5;top:calc(8px + env(safe-area-inset-top,0px));left:0;right:0;display:flex;gap:8px;justify-content:space-between;align-items:center;padding:0 12px;flex-wrap:wrap}
+#top nav,#top .r{display:flex;gap:6px;flex-wrap:wrap}
+.ma{width:38px;height:38px;border:1px solid var(--b);border-radius:50%;display:grid;place-items:center;font:20px var(--s);color:var(--c);background:rgba(91,26,31,.9)}
+#bot{position:fixed;z-index:5;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:wrap;padding:0 8px}
+#lab{color:var(--c);background:rgba(32,31,27,.82);padding:9px 12px;border-radius:2px;min-width:150px;text-align:center}
+#bk{display:none}
+#sub,#loc,#ttl,#cap{position:fixed;z-index:4;pointer-events:none;opacity:0;transition:opacity .8s;text-align:center}
+#sub{left:0;right:0;bottom:22%;font:italic 22px var(--s);color:var(--k);padding:0 16px}
+#loc{color:var(--r);border:1px solid var(--r);padding:3px 8px;transform:translate(14px,-50%)}
+#ttl{left:0;right:0;top:22%;color:#fff;text-shadow:0 2px 20px #000}#ttl h1{font:400 clamp(30px,6vw,72px)/1 var(--s)}#ttl p{font:italic 22px var(--s);margin-top:8px}
+#cap{left:0;right:0;bottom:70px;color:var(--c);font:12px var(--m)}#cap span{background:rgba(32,31,27,.85);padding:6px 10px}
+.cl{position:fixed;z-index:3;color:var(--b);pointer-events:none;transition:opacity .6s;opacity:0}
+#cover{position:fixed;inset:0;background:var(--c);z-index:3;pointer-events:none;transition:opacity 1.6s}
+.pn{position:fixed;z-index:8;background:var(--c);color:var(--k);border:1px solid var(--b);padding:22px;display:none;max-height:78vh;overflow:auto}
+#pan{left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,92vw)}
+#pan h2,#ct h2{font:400 34px/1.05 var(--s)}#pan .mo{color:var(--g);margin:6px 0 12px}#pan p{line-height:1.55;margin:8px 0}#pan b{font-weight:500}
+#idx{left:12px;top:60px;width:min(320px,90vw)}#idx button{display:block;width:100%;margin:5px 0;text-align:left;background:var(--k)}
+#ct{right:12px;top:60px;width:min(420px,94vw)}#ct input,#ct select,#ct textarea{width:100%;margin:5px 0;padding:9px;border:1px solid var(--k);background:#fff8ef;font:14px Inter,sans-serif}
+#ct q{display:block;font:italic 22px var(--s);margin:12px 0 4px}#ct a{color:var(--r)}
+.row{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+#desc{left:12px;bottom:68px;width:min(350px,92vw);max-height:34vh;padding:14px 16px;font-size:13px;line-height:1.5;background:rgba(245,235,221,.95);z-index:6}#desc h3{font:400 24px/1.1 var(--s);margin:2px 0 6px}#desc .mo{color:var(--g);margin-bottom:6px}
+#fb{display:none;position:fixed;inset:0;z-index:2;background:var(--c);padding:70px 20px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<canvas id="cv" aria-label="Interactive 3D museum"></canvas><div id="cover"></div><div id="fb">Your device can't run the 3D museum. Use the Collection index.</div>
+<div id="loc" class="mo">Accra, Ghana</div><div id="sub">Graphic Designer · Visual Storyteller · Founder of Adissa Creative Studio</div>
+<div id="ttl"><h1>The Museum of Melissa Adjanor</h1><p>An archive of ideas, identities and imagination.</p></div><div id="cap"><span></span></div>
+<header id="top"><span class="ma" aria-label="MA monogram">MA</span><nav aria-label="Museum"><button data-go="0">Home</button><button data-go="1">Who is SHE?</button><button data-go="2">The Collection</button><button data-go="8">Contact</button></nav>
+<div class="r"><button id="snd" aria-pressed="false">Sound off</button><button id="skip">Skip intro</button></div></header>
+<footer id="bot"><button id="bkp">‹ Page</button><button id="prev">‹ Previous</button><div id="lab" class="mo">Entrance</div><button id="next">Next ›</button><button id="bkn">Page ›</button><button id="exp">Explore</button><button id="ix">Collection index</button></footer>
+<aside id="desc" class="pn" aria-live="polite"></aside><aside id="idx" class="pn" aria-label="Collection index"></aside><section id="pan" class="pn" role="dialog"></section>
+<section id="ct" class="pn"><h2>HAVE AN IDEA?</h2><p style="font:italic 24px var(--s);margin:4px 0 10px">Let's give it a form.</p>
+<p><b>Let's create something meaningful.</b> Whether you are building a brand, planning an event or developing a creative project, tell me about your project, your goals and the story you want to communicate.</p>
+<form id="f"><input name="n" placeholder="Name" aria-label="Name" required><input name="e" type="email" placeholder="Email" aria-label="Email" required>
+<select name="t" aria-label="Project type"><option>Brand identity</option><option>Event design</option><option>Print &amp; stationery</option><option>Editorial / personalised print</option><option>Other</option></select>
+<textarea name="m" rows="4" placeholder="Your message" aria-label="Message" required></textarea><button>Send</button></form><p id="fm" style="margin-top:8px"></p><div id="lk" class="mo" style="margin-top:8px"></div>
+<q>Every idea has a story. I give it a form.</q><p class="mo">— Melissa Adjanor</p><p class="mo" style="margin:8px 0">Your vision, our design.</p><button id="again">Explore the collection again</button></section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(async()=>{
+const T=THREE,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+/* ===== EDIT ME ===== */
+const EMAIL="",LINKS={LinkedIn:"",Instagram:"","Adissa Creative Studio":""};
+const IMG={}; /* optional real artwork URLs: portrait,h4sn,gis,memorial,phoenix,card,mag,thurya */
+const C={c:'#F5EBDD',r:'#B92F35',k:'#201F1B',g:'#286548',b:'#C6A76B',m:'#5b1a1f'},SF='"Instrument Serif",Georgia,serif',MO='ui-monospace,Menlo,monospace',SS='Inter,system-ui,sans-serif';
+try{await Promise.race([Promise.all([document.fonts.load('40px "Instrument Serif"'),document.fonts.load('italic 40px "Instrument Serif"'),document.fonts.load('20px Inter')]),new Promise(r=>setTimeout(r,1500))])}catch(e){}
+let rd;try{rd=new T.WebGLRenderer({canvas:$('#cv'),antialias:true});if(!rd.getContext())throw 0}catch(e){$('#fb').style.display='block';$('#cover').style.display='none';rd=null}
+const DATA=[
+{t:'H4SN — Identity & Merchandise',c:'Logo Design · Merchandise · Visual Identity',d:"A visual identity and merchandise project for H4SN, bringing the organisation's logo into physical applications through branded apparel and accessories.",m:"Created the H4SN logo and the event merchandise: a T-shirt and a hat."},
+{t:'Ghana International School — Old Staff Christmas Get-together',c:'Event Design · Large-Format Print',d:'A backdrop and photo banner designed to give the gathering and its photographs a visual setting.',m:'Designed the event backdrop / photo banner.'},
+{t:'Opanin Kwaku Okyere Agyepong — Memorial Print Collection',c:'Memorial Design · Editorial Layout · Print Production',d:'A comprehensive memorial print project covering digital and printed materials designed to support communication and the organisation of the funeral.',m:'Designed digital and print invitations, brochure, banner, flyer, order-of-service cards and a custom donation receipt book.'},
+{t:"Phoenix Unity Club — Farmers' Day Trip",c:'Promotional Design · Event Communication',d:"A promotional flyer for the club's Farmers' Day trip to Bonsu Eco Park. The club brings together visually impaired members who keep taking part in social activities and trips across Ghana, enjoying life and exploring places together.",m:'Designed the trip flyer.'},
+{t:'In My Memory — Birthday Editorial Collection',c:'Editorial Design · Personalised Print',d:'Newspaper-themed birthday cards and a magazine-style publication created around the celebrant, turning a personal milestone into a keepsake told through editorial design.',m:'Designed the newspaper-themed cards and the matching magazine, personalised to each celebrant.'},
+{t:'Thurya Nail Bar, Accra — Brand Identity & Print Suite',c:'Brand Identity · Stationery · Business Print',d:'A brand identity and print project covering the logo and the materials used to introduce the business, communicate its services and support customer interactions.',m:'Created the logo and all print: opening invitation, thank-you cards, menu, consultation cards, business cards and complimentary cards.'}];
+[[`H4SN is a nonprofit organisation dedicated to children with special needs, built around the belief that everyone matters. The visual identity features a palm-shaped print rendered in rainbow colours, symbolising inclusion, individuality and the value of every child.<br><br>The project extended beyond the logo into branded event merchandise, including a T-shirt and hat, bringing the identity to life through wearable designs.`,'Designed the H4SN logo and the event merchandise: a T-shirt and a hat.'],
+[`Created a custom backdrop and photo banner for the Ghana International School Old Staff Christmas Get-together, a visual centrepiece and a dedicated setting for photographs and shared memories.<br><br>The project translated the event's purpose into a large-format display suited to a gathering celebrating connection and shared history.`,'Designed the event backdrop and photo banner.'],
+[`A comprehensive funeral stationery project created in honour of Opanin Kwaku Okyere Agyepong, bringing together digital and printed materials designed to support communication, remembrance and the organisation of the funeral.<br><br>Invitations, a brochure, banner, flyer, order-of-service cards and a custom donation receipt book formed one coordinated collection, balancing practical communication with the sensitivity and dignity required for memorial design.`,'Designed digital and print invitations, brochure, banner, flyer, order-of-service cards and the custom donation receipt book.'],
+[`A promotional flyer for Phoenix Unity Club's Farmers' Day trip to Bonsu Eco Park. The club brings together visually impaired members who continue to embrace social experiences, travel and opportunities to explore different places across Ghana.<br><br>The design communicated the trip while reflecting the spirit of participation, connection and enjoying life's experiences together.`,'Designed the trip flyer.'],
+[`A creative range of personalised birthday designs that transforms special occasions into keepsakes. Inspired by newspaper and magazine layouts, it reimagines birthday cards and publications as personal editorial stories centred on the celebrant.<br><br>The project explores personal storytelling, typography and editorial composition, turning a birthday greeting into something designed to be treasured.`,'Designed the newspaper-themed birthday cards and magazine-style publications, personalised to each celebrant.'],
+[`A brand identity and print design project for Thurya Nail Bar in Accra, extending the visual identity across a coordinated collection of customer-facing materials.<br><br>The logo, opening invitation, thank-you cards, menu, consultation cards, business cards and complimentary cards each serve a different purpose, from introducing the business to supporting client consultations.`,'Created the brand logo and all print materials.']].forEach((x,i)=>{DATA[i].d=x[0];DATA[i].m=x[1]});DATA[0].t='H4SN — Everyone Matters';DATA[4].t='Memory Design Collection — Personalised Editorial Keepsakes';DATA[2].t='In Loving Memory of Opanin Kwaku Okyere Agyepong';
+const ST=[{n:'Entrance',p:[0,1.7,7],t:[0,2.6,-8]},{n:'Who is SHE?',p:[0,2,2.6],t:[0,1.1,0]},
+{n:'01 · H4SN',p:[-3.5,1.7,-12],t:[-10.5,1.3,-12]},{n:'02 · Ghana Intl School',p:[5.5,1.8,-12],t:[13,1.9,-12]},{n:'03 · Memorial prints',p:[-3.5,1.9,-24],t:[-9.5,.9,-24]},
+{n:"04 · Phoenix Unity Club",p:[3.5,1.7,-24],t:[9,1.9,-24]},{n:'05 · In My Memory',p:[-3.5,1.8,-36],t:[-9,1,-36]},{n:'06 · Thurya Nail Bar',p:[3.5,1.7,-36],t:[9,1.3,-36]},{n:'Contact',p:[0,1.7,-40],t:[0,2.2,-52]}];
+/* ===== textures ===== */
+const TX=[];function tx(w,h,f){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d'),t=new T.CanvasTexture(c);t.anisotropy=8;t._r=()=>{x.clearRect(0,0,w,h);f(x,w,h);t.needsUpdate=true};t._r();TX.push(t);return t}
+const IM={},im=k=>{if(!IMG[k])return null;if(!IM[k]){const i=IM[k]=new Image();i.crossOrigin='anonymous';i.onload=()=>TX.forEach(t=>t._r());i.src=IMG[k]}return IM[k].naturalWidth?IM[k]:null};
+const tw=(x,s,px,py,f,col,al)=>{x.font=f;x.fillStyle=col;x.textAlign=al||'center';x.fillText(s,px,py)};
+const wr=(x,s,px,py,mw,lh)=>{let l='';for(const w of s.split(' ')){const t=l+w+' ';if(x.measureText(t).width>mw&&l){x.fillText(l,px,py);py+=lh;l=w+' '}else l=t}x.fillText(l,px,py);return py+lh};
+const mono=(x,cx,cy,r,col)=>{x.strokeStyle=col;x.lineWidth=3;x.beginPath();x.arc(cx,cy,r,0,7);x.stroke();tw(x,'MA',cx,cy+r*.3,`${r*.9}px ${SF}`,col)};
+const fill=(x,w,h,c)=>{x.fillStyle=c;x.fillRect(0,0,w,h)};
+const card=(w,h,bg,fg,ls,bd)=>tx(w,h,x=>{fill(x,w,h,bg);if(bd!==0){x.strokeStyle=C.b;x.lineWidth=2;x.strokeRect(10,10,w-20,h-20)}ls.forEach(([s,y,f,c])=>tw(x,s,w/2,y*h,f,c||fg))});
+const page=(h,body,n,bg)=>tx(512,700,(x,w,H)=>{fill(x,w,H,bg||C.c);tw(x,'WHO IS SHE?  ·  '+n,50,60,`13px ${MO}`,C.b,'left');x.fillStyle=C.k;x.font=`50px ${SF}`;x.textAlign='left';let y=wr(x,h,50,150,410,54);x.font=`21px ${SS}`;(Array.isArray(body)?body:[body]).forEach(b=>y=wr(x,b,50,y+30,410,32)+4);x.fillStyle=C.r;x.fillRect(50,640,40,4)});
+/* ===== land data ===== */
+const LAND=[[[-17,21],[-13,28],[-6,35.5],[10,37],[11,33],[20,31],[32,31],[34,28],[38,20],[43,12],[51,12],[46,3],[40,-3],[39,-10],[41,-15],[35,-24],[32,-29],[27,-34],[20,-35],[17,-30],[12,-17],[13,-8],[9,-1],[9,4],[5,5],[-2,5],[-8,4.5],[-13,8],[-17,14.5]],
+[[-9,37],[-9,43],[-2,43.5],[-1,46],[-4,48],[2,51],[8,54],[9,57],[5,58],[5,62],[15,69],[28,71],[40,67],[44,68],[60,69],[70,73],[80,73],[105,78],[140,73],[170,70],[180,68],[180,65],[163,60],[156,51],[143,59],[138,54],[141,48],[130,42],[129,35],[126,38],[122,40],[121,31],[120,26],[108,21],[106,10],[104,10],[103,1],[98,8],[97,17],[92,22],[87,21],[80,15],[77,8],[73,17],[70,21],[67,25],[62,25],[56,27],[50,30],[56,26],[59,22],[57,20],[52,16],[43,13],[39,22],[35,29],[35,33],[36,36],[30,36],[26,38],[26,41],[23,37],[20,40],[13,45],[9,44],[3,43],[-2,37]],
+[[-168,66],[-140,70],[-125,70],[-95,72],[-80,70],[-62,60],[-56,52],[-66,45],[-70,42],[-76,35],[-81,30],[-80,25],[-84,30],[-90,29],[-97,26],[-97,20],[-90,21],[-87,21],[-88,15],[-83,10],[-79,8.5],[-85,10],[-92,14],[-105,19],[-106,23],[-112,30],[-117,32],[-124,40],[-124,48],[-135,58],[-150,60],[-165,55],[-158,58],[-165,62]],
+[[-78,8],[-72,12],[-62,10],[-52,5],[-50,0],[-35,-5],[-39,-14],[-41,-22],[-48,-26],[-58,-35],[-57,-39],[-65,-41],[-68,-50],[-70,-54],[-74,-50],[-73,-40],[-71,-30],[-70,-18],[-76,-14],[-81,-5],[-80,0],[-77,4]],
+[[114,-22],[122,-18],[130,-12],[137,-12],[142,-11],[146,-19],[153,-26],[150,-37],[141,-38],[135,-34],[129,-32],[115,-34]],
+[[-55,60],[-45,60],[-20,70],[-20,80],[-40,83],[-65,80],[-72,76],[-55,68]],[[44,-25],[47,-25],[50,-15],[49,-12],[44,-17]],[[-5,50],[1,51],[2,53],[-2,57],[-5,58.5],[-6,55],[-3,54]],
+[[130,32],[135,34],[141,36],[142,42],[141,45],[139,40],[135,36]],[[109,1],[117,7],[119,1],[116,-4],[110,-3]],[[95,5],[106,-6],[104,-5],[98,2]],[[131,-1],[141,-3],[147,-6],[150,-10],[143,-9],[138,-8]],[[-24,65],[-14,65],[-14,64],[-22,63.5]]];
+const GH=[[-3.1,5.1],[-2,4.8],[1.2,6.1],[.5,8],[.6,9.5],[0,11],[-2.9,11],[-2.8,9],[-3.2,6.5]];
+const inside=(p,lo,la)=>{let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const a=p[i],b=p[j];if((a[1]>la)!=(b[1]>la)&&lo<(b[0]-a[0])*(la-a[1])/(b[1]-a[1])+a[0])c=!c}return c};
+const ll=(lo,la,r=1)=>{lo*=Math.PI/180;la*=Math.PI/180;return[r*Math.cos(la)*Math.sin(lo),r*Math.sin(la),r*Math.cos(la)*Math.cos(lo)]};
+const PB=[],KD=[];{const N=24000,GA=Math.PI*(3-Math.sqrt(5));for(let i=0;i<N;i++){const la=Math.asin(1-2*(i+.5)/N)*57.2958,lo=((i*GA*57.2958)%360)-180;if(inside(GH,lo,la))continue;let k=-1;if(inside(LAND[0],lo,la))k=1;else if(LAND.some(p=>inside(p,lo,la)))k=0;if(k>=0){PB.push(...ll(lo,la));KD.push(k)}}
+for(let lo=-3.3;lo<1.3;lo+=.3)for(let la=4.7;la<11.2;la+=.3)if(inside(GH,lo,la)){PB.push(...ll(lo,la));KD.push(2)}}
+const NP=KD.length;
+/* ===== renderer, intro scene ===== */
+const cam=new T.PerspectiveCamera(50,innerWidth/innerHeight,.05,200);
+const S1=new T.Scene();S1.background=new T.Color(C.c);const G=new T.Group();S1.add(G);
+const occ=new T.Mesh(new T.SphereGeometry(.985,48,32),new T.MeshBasicMaterial({color:C.c}));G.add(occ);
+const geo=new T.BufferGeometry(),pos=new Float32Array(PB),col=new Float32Array(NP*3);geo.setAttribute('position',new T.BufferAttribute(pos,3));geo.setAttribute('color',new T.BufferAttribute(col,3));
+const P=new T.Points(geo,new T.PointsMaterial({size:.028,vertexColors:true,sizeAttenuation:true}));P.frustumCulled=false;G.add(P);
+const rings=[1.12,1.28].map((r,i)=>{const l=new T.LineLoop(new T.BufferGeometry().setFromPoints([...Array(120)].map((_,j)=>new T.Vector3(Math.cos(j/120*6.2832)*r,0,Math.sin(j/120*6.2832)*r))),new T.LineBasicMaterial({color:C.b,transparent:true,opacity:.7}));l.rotation.set(.5+i*.6,0,i*.5);G.add(l);return l});
+const ac=ll(-.19,5.6,1.01),mk=new T.Mesh(new T.SphereGeometry(.012,12,8),new T.MeshBasicMaterial({color:C.r})),mr=new T.Mesh(new T.RingGeometry(.02,.026,32),new T.MeshBasicMaterial({color:C.r,side:2}));
+mk.position.set(...ac);mr.position.set(...ac);mr.lookAt(0,0,0);mr.rotateY(Math.PI);G.add(mk,mr);
+const RGB=h=>{const c=new T.Color(h);return[c.r,c.g,c.b]},cO=RGB('#a79879'),cA=RGB(C.b),cG=RGB(C.r),cK=RGB(C.k),cB=RGB(C.c);
+const rnd=Float32Array.from({length:NP},Math.random),tgt=new Float32Array(NP*3),c0=new Float32Array(NP*3);let nT=0,tcol;
+function mkText(){const asp=innerWidth/innerHeight,two=asp<1.1,w=1400,h=two?560:280,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#000';x.textBaseline='middle';x.textAlign='center';
+const L=two?['MELISSA','ADJANOR']:['MELISSA ADJANOR'];let fs=300;x.font=`${fs}px ${SF}`;const mw=Math.max(...L.map(s=>x.measureText(s).width));fs=Math.min(300,fs*1250/mw);x.font=`${fs}px ${SF}`;L.forEach((s,i)=>x.fillText(s,w/2,h*(L.length==1?.5:.27+i*.46)));
+const d=x.getImageData(0,0,w,h).data,pts=[],st=Math.max(3,Math.round(Math.sqrt(w*h*.12/Math.min(NP,5200))*1.3));for(let j=0;j<h;j+=st)for(let i=0;i<w;i+=st)if(d[(j*w+i)*4+3]>128)pts.push([i,j]);
+const vw=2*2.6*Math.tan(.4363)*asp,k=Math.min(vw*.86/w,3.4/w*1.2);const perm=[...Array(NP).keys()].sort(()=>Math.random()-.5);nT=Math.min(pts.length,NP);
+for(let q=0;q<NP;q++){const i=perm[q];if(q<nT){tgt[i*3]=(pts[q][0]-w/2)*k;tgt[i*3+1]=-(pts[q][1]-h/2)*k;tgt[i*3+2]=0}else{tgt[i*3]=PB[i*3]*2.5+(Math.random()-.5);tgt[i*3+1]=PB[i*3+1]*2.5;tgt[i*3+2]=PB[i*3+2]*2+1}}
+tcol=new Uint8Array(NP);perm.forEach((i,q)=>tcol[i]=q<nT?1:0)}
+const E=x=>x<0?0:x>1?1:x*x*(3-2*x);let it=0,baked=false;
+function resetIntro(){rd.toneMapping=T.NoToneMapping;it=0;baked=false;P.userData.s=null;pos.set(PB);if(P.parent!==G){P.parent.remove(P);G.add(P)}[occ,mk,mr,...rings].forEach(o=>o.visible=true);mkText();['sub','loc'].forEach(i=>$('#'+i).style.opacity=0);$('#cover').style.transition='none';$('#cover').style.opacity=1;G.rotation.set(.1,1.4,0)}
+const V=new T.Vector3();
+function introTick(dt){it+=dt;const t=it,a=E(t/5.2);
+if(t<5.8){G.rotation.y=(1-a)*1.4;G.rotation.x=.12*a+.1*(1-a);rings.forEach((r,i)=>r.rotation.y+=dt*(.2+i*.1));cam.position.set(0,0,4.4-2*E((t-2.5)/3.3));cam.lookAt(0,0,0);
+const af=E((t-1.5)/2),gh=E((t-3)/1.3),pu=1+.6*Math.sin(t*7);mr.scale.setScalar(pu);
+for(let i=0;i<NP;i++){const k=KD[i];for(let c=0;c<3;c++)col[i*3+c]=k==0?cO[c]:k==1?cO[c]+(cA[c]-cO[c])*af:cA[c]+(cG[c]-cA[c])*gh}
+G.updateMatrixWorld();V.copy(mk.position).applyMatrix4(G.matrixWorld).project(cam);const l=$('#loc');l.style.left=(V.x*.5+.5)*innerWidth+'px';l.style.top=(-V.y*.5+.5)*innerHeight+'px';l.style.opacity=t>3.6&&V.z<1?1:0;$('#cover').style.transition='opacity 1.2s';$('#cover').style.opacity=0}
+else{if(!baked){baked=true;cam.position.set(0,0,2.6);cam.lookAt(0,0,0);G.updateMatrixWorld();for(let i=0;i<NP;i++){V.set(PB[i*3],PB[i*3+1],PB[i*3+2]).applyMatrix4(G.matrixWorld);pos.set([V.x,V.y,V.z],i*3)}c0.set(col);const m=P.matrixWorld;G.remove(P);S1.add(P);P.position.set(0,0,0);P.rotation.set(0,0,0);[occ,mk,mr,...rings].forEach(o=>o.visible=false);$('#loc').style.opacity=0}
+const d=E((t-10.9)/1.6);cam.position.z=2.6;
+for(let i=0;i<NP;i++){const q=Math.min(1,Math.max(0,(t-5.8)/3-rnd[i]*.3)),u=q*q*(3-2*q),tx_=tcol[i];const sx=pos.length&&c0[0];
+const bx=P.userData.s||(P.userData.s=pos.slice());
+pos[i*3]=bx[i*3]+(tgt[i*3]-bx[i*3])*u;pos[i*3+1]=bx[i*3+1]+(tgt[i*3+1]-bx[i*3+1])*u;pos[i*3+2]=bx[i*3+2]*(1-u)+tgt[i*3+2]*u+Math.sin(Math.PI*u)*(rnd[i]*7%1-.5)*1.6+d*d*5;
+for(let c=0;c<3;c++){const to=tx_?cK[c]:cB[c];col[i*3+c]=c0[i*3+c]+(to-c0[i*3+c])*u;if(d>0)col[i*3+c]+=(cB[c]-col[i*3+c])*d}}
+$('#sub').style.opacity=t>9.2&&t<11.4?1:0}
+geo.attributes.position.needsUpdate=geo.attributes.color.needsUpdate=true;rd.render(S1,cam);if(t>12.6)toMuseum()}
+/* coordinate labels */
+const cls=[...Array(5)].map(()=>{const d=document.createElement('div');d.className='cl';$('body').append(d);return d});
+setInterval(()=>{if(mode!='intro')return;cls.forEach(d=>{d.style.opacity=0;if(Math.random()<.5){const a=Math.random()*6.28,r=Math.min(innerWidth,innerHeight)*.38;d.textContent=(Math.random()*80-20).toFixed(3)+'° N · '+(Math.random()*60-30).toFixed(3)+'° E';d.style.left=innerWidth/2+Math.cos(a)*r*1.1+'px';d.style.top=innerHeight/2+Math.sin(a)*r+'px';d.style.opacity=.9}})},1300);
+/* ===== museum scene ===== */
+const S2=new T.Scene();S2.background=new T.Color('#1d1c19');S2.fog=new T.Fog('#1d1c19',30,80);
+const M=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.8},o||{}));
+const bx=(w,h,d,m,x,y,z,p)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);(p||S2).add(o);return o};
+const pl=(w,h,t,x,y,z,rx,ry,p,o)=>{const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshStandardMaterial(Object.assign({map:t,roughness:.7,side:2},o||{})));m.position.set(x,y,z);m.rotation.order='YXZ';m.rotation.set(rx||0,ry||0,0);(p||S2).add(m);return m};
+const cy=(r1,r2,h,m,x,y,z,p,s)=>{const o=new T.Mesh(new T.CylinderGeometry(r1,r2,h,s||20),m);o.position.set(x,y,z);(p||S2).add(o);return o};
+const grp=(x,z,ry)=>{const g=new T.Group();g.position.set(x,0,z);g.rotation.y=ry||0;S2.add(g);return g};
+S2.add(new T.AmbientLight('#fff1dd',.55),new T.HemisphereLight('#fff4e4','#4a3f35',.7));
+const spot=(x,y,z,tx_,ty,tz,c,i,an)=>{const s=new T.SpotLight(c||'#fff0d8',i||1.3,16,an||.65,.6,1);if((spot.n=(spot.n||0)+1)<=7){s.castShadow=true;s.shadow.mapSize.set(512,512);s.shadow.bias=-.0006}s.position.set(x,y,z);s.target.position.set(tx_,ty,tz);S2.add(s,s.target);return s};
+const flT=tx(512,512,(x,w,h)=>{fill(x,w,h,'#d8cfc0');for(let i=0;i<2600;i++){x.fillStyle=['#b9ad98','#efe8da','#8f8576','#c9bda8'][i%4];x.fillRect(Math.random()*w,Math.random()*h,2+Math.random()*3,2+Math.random()*3)}});flT.wrapS=flT.wrapT=T.RepeatWrapping;flT.repeat.set(7,18);
+const fl=new T.Mesh(new T.PlaneGeometry(28,72),new T.MeshStandardMaterial({map:flT,roughness:.2,metalness:.12}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,-16);S2.add(fl);
+const wm=M('#efe3d0',{roughness:.95}),dk=M('#2a2824');bx(.4,7,72,wm,-14.2,3.5,-16);bx(.4,7,72,wm,14.2,3.5,-16);bx(28.8,7,.4,wm,0,3.5,20);bx(28.8,7,.4,M('#6d1d24'),0,3.5,-52);bx(28,.3,72,dk,0,7,-16);
+for(const z of [-50,-38,-26,-14,-2,10])for(const x of [-8,0,8])bx(.3,.05,4,new T.MeshBasicMaterial({color:'#fff6e6'}),x,6.82,z);
+[-14,14].forEach(x=>bx(.1,.25,72,dk,x*.985,.12,-16));
+const num=(n,g,x,y,z,ry)=>pl(1.6,.8,tx(512,256,(c,w,h)=>{tw(c,n,100,170,`170px ${SF}`,C.b,'center');tw(c,DATA[+n-1].t.split(' — ')[0].toUpperCase().slice(0,26),230,150,`13px ${MO}`,C.c,'left')}),x,y,z,0,ry,g,{transparent:true});
+const CL=[],ck=(m,f)=>{m.userData.on=f;CL.push(m);return m};
+/* curtains */
+const cuT=tx(256,256,(x,w,h)=>{for(let i=0;i<w;i++){const v=.55+.45*Math.sin(i/256*6.28*14);x.fillStyle=`rgb(${150*v|0},${22*v|0},${30*v|0})`;x.fillRect(i,0,1,h)}}),cur=[-1,1].map(s=>{const g=new T.PlaneGeometry(14,7.4,50,1),m=new T.Mesh(g,new T.MeshStandardMaterial({map:cuT,roughness:.9,side:2}));const a=g.attributes.position;for(let i=0;i<a.count;i++)a.setZ(i,Math.sin(a.getX(i)*3.1)*.14);m.position.set(s*7,3.7,11);S2.add(m);return m});
+bx(28,.5,.5,M('#8f1c24'),0,7.3,11);
+/* ---- book builder ---- */
+function book(W,H,lv,rt){const wp=new T.Group(),g=new T.Group();wp.add(g);const n=lv.length,Ls=[],pm=M('#efe5d3');
+const rb=pl(W,H,rt||null,W/2,0,-.006,0,0,g);rb.material.color.set(rt?'#fff':'#efe5d3');const lb=bx(W,.004,H,pm,-W/2,0,-.006,g);lb.geometry=new T.PlaneGeometry(W,H);lb.rotation.set(0,0,0);lb.material=M('#efe5d3',{side:2});lb.visible=false;
+const B={wp,g,n,s:0,meshes:[rb]};
+lv.forEach((t,i)=>{const gm=new T.PlaneGeometry(W,H,12,1);gm.translate(W/2,0,0);const ox=Float32Array.from(gm.attributes.position.array),p=new T.Group();
+const f=new T.Mesh(gm,new T.MeshStandardMaterial({map:t[0],roughness:.8,color:'#bdb7ab'})),b0=t[1].clone();b0.needsUpdate=true;b0.wrapS=T.RepeatWrapping;b0.repeat.x=-1;b0.offset.x=1;TX.push(b0);b0._r=()=>{b0.needsUpdate=true};
+const bk=new T.Mesh(gm,new T.MeshStandardMaterial({map:b0,roughness:.8,color:'#bdb7ab',side:T.BackSide}));p.add(f,bk);g.add(p);Ls.push({p,gm,ox,f:0});B.meshes.push(f,bk);f.userData.bk=bk.userData.bk=B});
+rb.userData.bk=lb.userData.bk=B;
+B.up=dt=>{Ls.forEach((l,i)=>{const t=i<B.s?1:0,d=t-l.f;if(d){l.f+=Math.sign(d)*Math.min(Math.abs(d),dt*1.8);const e=l.f*l.f*(3-2*l.f);l.p.rotation.y=-Math.PI*e;l.p.position.z=(l.f<.5?n-i:i+1)*.004;const a=l.gm.attributes.position;for(let k=0;k<a.count;k++){const u=l.ox[k*3]/W;a.setZ(k,-Math.sin(Math.PI*e)*.35*W*u*u)}a.needsUpdate=true}});
+const e=Ls[0].f*Ls[0].f*(3-2*Ls[0].f);g.position.x=-W/2*(1-e);lb.visible=Ls[0].f>0};return B}
+const flip=(B,d)=>{let s=B.s+d;if(s>B.n)s=0;if(s<0)s=B.n;B.s=s;sfx('page')};
+/* ---- who is she book ---- */
+const portrait=tx(512,700,(x,w,h)=>{fill(x,w,h,C.k);const i=im('portrait');if(i)x.drawImage(i,0,0,w,h);else{const g=x.createRadialGradient(256,300,20,256,300,300);g.addColorStop(0,'#5b3a2a');g.addColorStop(1,C.k);fill(x,w,h,'#1b1a17');x.fillStyle=g;x.fillRect(0,0,w,h);x.fillStyle='#2f2a24';x.beginPath();x.arc(256,290,85,0,7);x.fill();x.beginPath();x.ellipse(256,560,170,150,0,Math.PI,0);x.fill();tw(x,'ADD PORTRAIT  ·  IMG.portrait',256,650,`12px ${MO}`,C.b)}tw(x,'MELISSA ADJANOR',256,60,`13px ${MO}`,C.b);mono(x,440,610,34,C.b)});
+const cover=tx(512,700,(x,w,h)=>{fill(x,w,h,C.c);x.strokeStyle=C.b;x.lineWidth=2;x.strokeRect(24,24,w-48,h-48);mono(x,w/2,210,64,C.m);tw(x,'WHO IS SHE?',w/2,390,`68px ${SF}`,C.k);tw(x,'The story behind the work.',w/2,440,`italic 28px ${SF}`,C.k);x.fillStyle=C.m;x.fillRect(w/2-40,500,80,6);tw(x,'ADISSA CREATIVE STUDIO',w/2,620,`13px ${MO}`,C.b)});
+const BIO=["I'm Melissa Adjanor, a Ghanaian graphic designer, visual storyteller and founder of Adissa Creative Studio.","I believe design is more than making things look beautiful. It is about communicating ideas, creating meaningful experiences and giving a visual identity to the stories people want to tell."];
+const bkT=[[cover,portrait],[page('Who is Melissa Adjanor?',BIO,'01'),page('Approach',["My creative work spans brand identity, graphic design, event materials and print publications. I enjoy exploring how typography, colour, composition and detail come together to create something distinctive and memorable.","My approach is shaped by curiosity, experimentation and a desire to keep learning."],'02')],
+[page('Interests & services',['Brand identity & logos','Print & stationery','Event design & large-format print','Editorial & memorial print','Merchandise design','Personalised keepsakes'],'03'),tx(512,700,(x,w,h)=>{fill(x,w,h,C.c);mono(x,256,260,80,C.m);tw(x,'Welcome to my world of design.',256,430,`italic 34px ${SF}`,C.k);tw(x,'The collection awaits  →',256,490,`13px ${MO}`,C.r)})]];
+const BK=book(.42,.58,bkT,tx(512,700,(x,w,h)=>fill(x,w,h,'#e9dcc5')));BK.wp.rotation.x=-Math.PI/2+.38;BK.wp.position.set(0,1.07,0);S2.add(BK.wp);BK.meshes.forEach(m=>CL.push(m));
+const ped=cy(.55,.6,1.05,M('#e9e2d4',{roughness:.4}),0,.52,0);bx(1.5,.05,1.5,M('#2a2824'),0,.025,0);spot(2,6,3,0,1,0,'#ffe9cc',.28,.5);
+/* ---- 01 H4SN ---- */
+const logoH=tx(512,256,(x,w,h)=>{const i=im('h4sn');if(i)x.drawImage(i,0,0,w,h);else{x.lineCap='round';['#e53935','#fb8c00','#fdd835','#43a047','#1e88e5'].forEach((c,k)=>{const a=-1.9+k*.5,L=[70,95,100,92,70][k];x.strokeStyle=c;x.lineWidth=26;x.beginPath();x.moveTo(150+Math.cos(a+1.57)*0,170);x.lineTo(150+Math.sin(a+.25)*L*1.05+(k-2)*12,170-Math.cos(a+.25)*L*1.1-30);x.stroke()});x.fillStyle='#8e44ad';x.beginPath();x.ellipse(150,182,50,38,0,0,7);x.fill();tw(x,'H4SN',360,150,`bold 110px ${SF}`,'#f1ece2');tw(x,'EVERYONE MATTERS',360,195,`17px ${MO}`,C.b)}});
+let tee,cap,tspin=0,cspin=0;
+{const g=grp(-9,-12);bx(.2,5,9,M('#2b2926'),-4.4,2.5,0,g);num('01',g,-4.2,3.9,-2,Math.PI/2);
+bx(1.1,.08,2.4,M('#7a6247',{roughness:.5}),-1,.82,1.6,g);bx(.08,.8,2.2,dk,-1,.4,1.6,g);bx(1,.05,.1,dk,-1,.05,.55,g);bx(1,.05,.1,dk,-1,.05,2.65,g);
+const pl2=pl(.5,.25,logoH,-1,.88+.0,1.1,-1.2,Math.PI/2,g);pl2.material.transparent=true;pl2.material.color.set('#fff');
+const rail=cy(.02,.02,5,M('#aaa',{metalness:.8,roughness:.3}),-3,2.3,0,g);rail.rotation.x=Math.PI/2;
+tee=new T.Group();tee.position.set(-3,2.2,0);g.add(tee);const sh=new T.Shape();sh.moveTo(-.12,.35);[[-.3,.3],[-.5,.12],[-.42,-.02],[-.28,.05],[-.28,-.38],[.28,-.38],[.28,.05],[.42,-.02],[.5,.12],[.3,.3],[.12,.35]].forEach(p=>sh.lineTo(p[0],p[1]));sh.quadraticCurveTo(0,.22,-.12,.35);
+const tm=new T.Mesh(new T.ExtrudeGeometry(sh,{depth:.05,bevelEnabled:true,bevelSize:.012,bevelThickness:.015,bevelSegments:2}),M('#121212',{roughness:.95}));tm.position.set(0,-.45,-.025);tm.scale.setScalar(1.15);tee.add(tm);
+const pr=pl(.4,.2,logoH,0,-.5,.07,0,0,tee,{transparent:true,color:'#fff'});pr.material.depthWrite=false;
+[-1,1].forEach(s=>{const a=bx(.3,.012,.012,M('#999',{metalness:.8}),s*.12,-.05,0,tee);a.rotation.z=-s*.3});const hk=new T.Mesh(new T.TorusGeometry(.03,.006,6,12,4.7),M('#999',{metalness:.8}));hk.position.y=.08;tee.add(hk);
+ck(tm,()=>{tspin=1;sfx('cloth');look(new T.Vector3(-12,1.7,-12),1.7)});ck(pr,()=>tm.userData.on());
+cy(.35,.4,1,M('#d9d2c4'),-1,.5,-1.7,g);cap=new T.Group();cap.rotation.y=Math.PI/2;cap.position.set(-1,1.13,-1.7);g.add(cap);
+const dm=new T.Mesh(new T.SphereGeometry(.13,24,12,0,6.283,0,1.571),M('#121212',{roughness:.9}));dm.scale.set(1,.9,1.05);cap.add(dm);
+const vz=new T.Mesh(new T.CylinderGeometry(.14,.14,.01,20,1,false,-1.571,3.1416),M('#121212'));vz.position.set(0,.01,.06);vz.rotation.x=.12;cap.add(vz);pl(.15,.075,logoH,0,.07,.131,-.1,0,cap,{transparent:true,color:'#fff'}).material.depthWrite=false;
+ck(dm,()=>{cspin=1;sfx('thunk');look(new T.Vector3(-10,1.2,-13.7),1.3)});ck(vz,()=>dm.userData.on());
+spot(-5,6,-12,-10,1.5,-12,'#fff0d8',1.6,.5)}
+/* ---- 02 backdrop ---- */
+let rope;
+const bdT=tx(1792,960,(x,w,h)=>{const i=im('gis');if(i){x.drawImage(i,0,0,w,h);return}fill(x,w,h,'#fbf6ec');x.fillStyle=C.g;x.fillRect(0,0,w,26);x.fillRect(0,h-26,w,26);x.fillStyle=C.r;x.fillRect(0,26,w,8);x.fillRect(0,h-34,w,8);
+tw(x,'GHANA INTERNATIONAL SCHOOL',w/2,120,`bold 74px ${SF}`,C.g);tw(x,'OLD STAFF CHRISTMAS GET-TOGETHER',w/2,185,`34px ${MO}`,C.r);
+for(let r=0;r<4;r++)for(let c=0;c<7;c++){const cx=130+c*255+(r%2)*125,cy_=300+r*155;x.strokeStyle=r%2?C.g:C.r;x.lineWidth=5;x.beginPath();x.arc(cx,cy_,48,0,7);x.stroke();tw(x,'GIS',cx,cy_+12,`bold 32px ${SS}`,r%2?C.g:C.r);tw(x,'OLD STAFF',cx+95,cy_-6,`15px ${MO}`,C.k,'left');tw(x,'XMAS',cx+95,cy_+16,`15px ${MO}`,C.b,'left')}
+tw(x,'PLACEHOLDER COMPOSITION · SET IMG.gis TO SHOW YOUR DESIGN',w/2,h-48,`14px ${MO}`,'#999')});
+{const g=grp(13.4,-12,-Math.PI/2);num('02',g,-4.5,5.3,-.2,0);const m=pl(7,3.75,bdT,0,2.3,0,0,0,g);m.rotation.y=Math.PI;m.position.z=.02;m.rotation.y=0;
+[-3.7,3.7].forEach(x=>cy(.05,.05,4.4,M('#b7b7b7',{metalness:.9,roughness:.25}),x,2.2,0,g));bx(7.5,.08,.08,M('#b7b7b7',{metalness:.9}),0,4.2,0,g);bx(8,.1,2.2,M('#26231f'),0,.05,.7,g);
+rope=new T.Group();g.add(rope);[-3.4,3.4].forEach(x=>{[0,1].forEach(r=>{const px=x+(x>0?1:-1)*.6;cy(.04,.05,1,M('#b08a3c',{metalness:.8,roughness:.3}),px,.5,2.2+r*0,rope)})});
+rope.children.forEach(o=>o.visible=true);const cv_=new T.CatmullRomCurve3([new T.Vector3(-4,.9,2.2),new T.Vector3(0,.55,2.2),new T.Vector3(4,.9,2.2)]);rope.add(new T.Mesh(new T.TubeGeometry(cv_,30,.025,6),M(C.r,{roughness:.6})));
+ck(m,()=>{sfx('ding');look(new T.Vector3(13,2.3,-12),5)});spot(7,6.4,-12,13,2.2,-12,'#fff2dc',2,.7)}
+/* ---- 03 memorial ---- */
+const mem=[];
+{const g=grp(-9,-24);bx(.2,5,10,M('#c9c4ba'),-4.4,2.5,0,g);num('03',g,-4.2,3.9,-3,Math.PI/2);bx(1.7,.1,3.6,M('#e6e0d3',{roughness:.4}),-1,.85,0,g);bx(.12,.8,3.3,dk,-1,.4,0,g);
+const NM='Opanin Kwaku Okyere Agyepong',front=(w,h,t,sub)=>card(w,h,'#f4efe4',C.k,[['IN LOVING MEMORY',.14,`15px ${MO}`,C.b],[NM,.5,`36px ${SF}`],[t,.72,`italic 28px ${SF}`,C.m],[sub||'',.86,`13px ${MO}`,C.b]]);
+const it_=[['Order-of-service cards',.4,.58,front(300,440,'Order of Service'),-.6,.3,0],['Digital & print invitations',.4,.58,front(300,440,'Invitation'),-.3,-.6,.1],
+['Brochure',.5,.6,front(300,440,'Brochure','FOLDED PROGRAMME'),-1.3,.3,0],['Flyer',.46,.66,front(300,440,'Flyer'),-.75,.35,.3],['Custom donation receipt book',.5,.34,card(400,260,'#e7ddc9',C.k,[['DONATION RECEIPT BOOK',.4,`26px ${SF}`],[NM,.6,`italic 22px ${SF}`,C.m]]),-1,-.55,-.8],['Banner',.5,1.1,front(300,660,'Banner'),-1.5,-1.3,.2]];
+const x0=-1.4;it_.forEach((d,i)=>{const gp=new T.Group();gp.position.set(-1.2+(i%2)*.8,.92,-1.1+Math.floor(i/2)*1.1);g.add(gp);const m=pl(d[1]*1.1,d[2]*1.1,d[3],0,0,0,-1.25,Math.PI/2,gp);const o={gp,y0:.92,sel:0,l:d[0]};mem.push(o);ck(m,()=>{mem.forEach(q=>q.sel=0);o.sel=1;sfx('page');say(d[0]);look(gp.getWorldPosition(new T.Vector3()),1.6)})});
+spot(-5,6.3,-24,-9.5,.9,-24,'#fff6e6',1.1,.6)}
+/* ---- 04 Phoenix ---- */
+let fly;
+const flyT=tx(800,1100,(x,w,h)=>{const i=im('phoenix');if(i){x.drawImage(i,0,0,w,h);return}const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#2f8a3a');g.addColorStop(1,'#1d5f2a');x.fillStyle=g;x.fillRect(0,0,w,h);tw(x,"FARMERS' DAY TRIP",w/2,90,`bold 66px ${SF}`,'#fff');tw(x,'BONSU ECO PARK',w/2,135,`24px ${MO}`,'#ffd54a');
+[['HORSE RIDE','#7ab8e8',-.12,70],['ZIPLINE','#a8c97a',.02,300],['CANOPY WALK','#4c9a5a',.1,540]].forEach(([s,c,r,xx],k)=>{x.save();x.translate(xx+110,300+(k==1?-20:0));x.rotate(r);x.fillStyle='#f7f4ec';x.fillRect(-105,-130,250,310);x.fillStyle=c;x.fillRect(-92,-118,224,220);x.fillStyle='#fff7';x.beginPath();x.arc(20,-60,28,0,7);x.fill();tw(x,s,20,142,`bold 24px ${SS}`,C.k);x.restore()});
+x.fillStyle='#111';x.beginPath();x.roundRect?x.roundRect(380,600,380,150,30):x.rect(380,600,380,150);x.fill();x.fillStyle='#8cc';x.fillRect(560,625,180,50);[470,650].forEach(cx=>{x.fillStyle='#000';x.beginPath();x.arc(cx,760,34,0,7);x.fill()});
+tw(x,'PACKAGE INCLUDES:',60,640,`bold 34px ${SS}`,'#ffb52e','left');['Transportation','Entrance Fee','All tour charges','Lunch','Drinks'].forEach((s,i)=>tw(x,'✔ '+s,60,700+i*48,`28px ${SS}`,'#fff','left'));tw(x,'PHOENIX UNITY CLUB',w/2,1060,`18px ${MO}`,'#d9f2d0')});
+{const g=grp(9,-24,-Math.PI/2);bx(10,5.5,.2,M('#1f4d36'),0,2.7,-4.4,g);num('04',g,-3,4.2,-4.2,0);for(let i=0;i<6;i++)cy(0,1.1+i%3*.4,2+i%2,M(['#2e7d46','#3a8f55','#256b3b'][i%3],{roughness:.9}),-4+i*1.6,1,-4,g,5);
+fly=new T.Group();fly.position.set(0,1.9,0);g.add(fly);bx(1.82,2.5,.08,M('#c6a76b',{metalness:.6,roughness:.4}),0,0,-.02,fly);const fm=pl(1.7,2.34,flyT,0,0,.03,0,0,fly);fm.material.side=0;ck(fm,()=>{sfx('ding');openPan(3)});
+spot(4,6.3,-26,9,1.9,-24,'#d9ffdc',2,.5);spot(4,6.3,-22,9,1.9,-24,'#fff0d0',1,.5)}
+/* ---- 05 In My Memory ---- */
+let flo=[];
+const cardF=tx(400,560,(x,w,h)=>{const i=im('card');if(i){x.drawImage(i,0,0,w,h);return}fill(x,w,h,'#f4efe4');x.fillStyle=C.k;x.fillRect(20,24,w-40,3);x.fillRect(20,32,w-40,1);tw(x,'THE BIRTHDAY TIMES',w/2,70,`bold 38px ${SF}`,C.k);tw(x,"Let's Celebrate!",w/2,140,`italic 52px ${SF}`,C.r);x.fillStyle='#bbb';x.fillRect(30,170,150,180);tw(x,'PHOTO',105,265,`12px ${MO}`,'#777');x.fillStyle=C.k;x.font=`15px ${SS}`;x.textAlign='left';wr(x,'Star of the day. A personalised front page written around the celebrant: name, age, story and photographs.',200,190,170,22);tw(x,'PERSONALISED EDITION',w/2,520,`12px ${MO}`,C.b)});
+const cardI=card(400,560,'#f4efe4',C.k,[['HAPPY BIRTHDAY',.3,`bold 42px ${SF}`],['with love',.45,`italic 34px ${SF}`,C.r],['★',.6,`40px ${SS}`,C.b]]);
+const magF=tx(420,560,(x,w,h)=>{const i=im('mag');if(i){x.drawImage(i,0,0,w,h);return}fill(x,w,h,'#2a1a1c');tw(x,'IN MY',w/2,170,`90px ${SF}`,C.c);tw(x,'MEMORY',w/2,270,`bold 90px ${SF}`,C.c);x.strokeStyle=C.b;x.strokeRect(24,24,w-48,h-48);tw(x,'THE BIRTHDAY EDITION',w/2,420,`16px ${MO}`,C.b);mono(x,w/2,490,28,C.b)});
+const sp1=n=>card(420,560,'#f6f0e4',C.k,[['IN MY MEMORY',.1,`13px ${MO}`,C.b],[n,.4,`46px ${SF}`],['Typography & layout · personalised feature',.9,`12px ${MO}`,C.b]]);
+{const g=grp(-9,-36);bx(.2,5,10,M('#ece1cf'),-4.4,2.5,0,g);num('05',g,-4.2,4,-3,Math.PI/2);cy(1.3,1.3,.08,M('#6b4a30',{roughness:.4}),-1,.82,0,g,32);cy(.12,.3,.8,dk,-1,.4,0,g);
+const bc=book(.22,.3,[[cardF,cardI]],card(400,560,'#f4efe4',C.k,[['Make a wish',.5,`italic 40px ${SF}`,C.r]]));bc.wp.position.set(-.8,.9,.5);bc.wp.rotation.set(-Math.PI/2+.25,0,-.3);g.add(bc.wp);
+const bm=book(.24,.32,[[magF,sp1('Cover story')],[sp1('The year in pictures'),sp1('Letters from friends')]],sp1('Colophon'));bm.wp.position.set(-1.1,.9,-.55);bm.wp.rotation.set(-Math.PI/2+.25,0,.2);g.add(bm.wp);
+[bc,bm].forEach(b=>{b.meshes.forEach(m=>{CL.push(m);m.userData.bk=b;m.userData.small=1})});mem.books=[bc,bm];
+[[sp1('Selected spread'),-.1],[sp1('Typography details'),.15]].forEach(([t,r],i)=>{const f=pl(.9,1.2,t,-3.2,1.9,-1.3+i*1.6,0,Math.PI/2+r,g);flo.push(f)});
+spot(-5,6.3,-36,-9,1,-36,'#fff0d8',1.3,.6)}
+/* ---- 06 Thurya ---- */
+const TH=[];
+{const g=grp(9,-36,-Math.PI/2);bx(10,5.5,.2,M('#4a1217'),0,2.7,-4.4,g);num('06',g,-3,4.4,-4.2,0);
+const lg=tx(768,320,(x,w,h)=>{const i=im('thurya');if(i){x.drawImage(i,0,0,w,h);return}tw(x,'Thurya',w/2,190,`italic 150px ${SF}`,C.c);tw(x,'NAIL BAR · ACCRA',w/2,255,`22px ${MO}`,C.b)});
+pl(2.6,1.08,lg,0,2.6,-4.2,0,0,g,{transparent:true});cy(.7,.75,.95,M('#d6cfc2',{roughness:.6}),0,.47,0,g,40);
+const it2=[['Logo',card(300,300,'#5b1a1f',C.c,[['Thurya',.55,`italic 80px ${SF}`],['NAIL BAR',.72,`16px ${MO}`,C.b]]),.3,.3,-.25,.3,.3],['Menu',card(300,420,'#f1ebdf',C.k,[['Thurya',.12,`italic 50px ${SF}`,C.m],['Menu',.28,`30px ${SF}`],['Manicure ·  Pedicure',.45,`15px ${MO}`],['Gel · Acrylic',.55,`15px ${MO}`],['Nail art',.65,`15px ${MO}`]]),.28,.4,.35,-.25,-.3],
+['Opening invitation',card(420,260,'#5b1a1f',C.c,[['You are invited',.4,`34px ${SF}`],['THE OPENING OF THURYA',.6,`15px ${MO}`,C.b]]),.4,.25,-.1,.5,.2],['Thank-you card',card(320,220,'#f1ebdf',C.m,[['Thank you',.5,`italic 48px ${SF}`]]),.3,.2,-.4,-.35,-.1],
+['Consultation card',card(260,340,'#f1ebdf',C.k,[['CONSULTATION',.2,`16px ${MO}`,C.m],['Name ______',.45,`16px ${SS}`],['Preferences ______',.6,`16px ${SS}`]]),.24,.32,.25,.1,.4],['Business cards',card(360,200,'#5b1a1f',C.c,[['Thurya',.5,`italic 54px ${SF}`]]),.2,.12,-.1,-.05,.05],['Complimentary cards',card(320,200,'#e8dcc6',C.m,[['Complimentary',.5,`italic 36px ${SF}`]]),.22,.14,.1,-.5,.1]];
+it2.forEach((d,i)=>{const gp=new T.Group();gp.position.set(d[4]*.8-.1,.95+(i?0:.01),d[5]*.8);gp.rotation.y=d[6];gp.scale.setScalar(.001);g.add(gp);const m=pl(d[2]*1.5,d[3]*1.5,d[1],0,d[3]*.75,0,-.2,0,gp);const o={gp,on:0,l:d[0]};TH.push(o);ck(m,()=>{sfx('page');say(d[0]);look(gp.getWorldPosition(new T.Vector3()).add(new T.Vector3(0,.3,0)),1.8)})});
+TH.pedG=g;spot(5,6.3,-36,9,1.2,-36,'#fff0d8',1.6,.6)}
+/* ---- contact room ---- */
+{const cT=tx(1024,512,(x,w,h)=>{fill(x,w,h,'#6d1d24');tw(x,'HAVE AN IDEA?',w/2,260,`150px ${SF}`,C.c);tw(x,"Let's give it a form.",w/2,350,`italic 52px ${SF}`,C.b)});pl(14,7,cT,0,3.6,-51.7,0,0);
+bx(.5,5,.5,M('#8f1c24'),-3.6,2.5,-42);bx(.5,5,.5,M('#8f1c24'),3.6,2.5,-42);bx(7.7,.5,.5,M('#8f1c24'),0,5.2,-42);spot(0,6.5,-44,0,3,-52,'#ffe8d0',1.6,.8);S2.add(new T.PointLight('#ffc9b0',.5,20)).position;}
+/* ===== avatars ===== */
+const AV=[],WP=[[0,12],[-3,-4],[3,-4],[-5,-8],[5,-8],[-5,-17],[5,-17],[-4,-30],[4,-30],[-6,-12],[6,-12],[0,-32],[-2,-44],[2,-44]],FOC=[[-10,1.4,-12],[13,1.8,-12],[-9.5,1,-24],[9,1.9,-24],[-9,1,-36],[9,1.2,-36],[0,1.2,0]];
+const SKN=['#8a5a3c','#5e3b26','#c08a62','#3f2818','#a46f4b','#6d4630'],HR=['#120d0a','#2b1b12','#0a0a0a','#3a2a1e'],TOP=[C.k,C.g,C.r,'#d9c7a0','#3b4a63','#e6dccb','#6b3f52','#7a6247'];
+function human(i){const g=new T.Group(),fem=i%2==1,sk=M(SKN[i%6],{roughness:.55}),top=M(TOP[i],{roughness:.9}),pn=M(fem?SKN[i%6]:['#23262d','#3b4252','#2b2622','#1c1c1c'][i%4],{roughness:.9}),hr=M(HR[i%4],{roughness:.8});
+const sm=(r,m,x,y,z,p,sx,sy,sz)=>{const o=new T.Mesh(new T.SphereGeometry(r,16,12),m);o.position.set(x,y,z);o.scale.set(sx||1,sy||1,sz||1);p.add(o);return o};
+cy(.16,.19,.62,top,0,1.14,0,g,18);sm(.2,top,0,1.42,0,g,1.1,.4,.62);sm(.19,fem?top:pn,0,.84,0,g,1,.7,.8);if(fem)cy(.17,.3,.45,top,0,.62,0,g,20);
+cy(.05,.055,.12,sk,0,1.52,0,g,10);const hd=new T.Group();hd.position.set(0,1.67,0);g.add(hd);sm(.108,sk,0,0,0,hd,.92,1.12,1.02);
+const hc=new T.Mesh(new T.SphereGeometry(.118,18,10,0,6.283,0,1.9),hr);hc.position.set(0,.012,-.012);hd.add(hc);if(fem||i%4==2)sm(.115,hr,0,-.07,-.06,hd,1,1.5,.85);
+sm(.017,sk,0,-.012,.108,hd,1,1.2,1.2);[-1,1].forEach(s=>{sm(.014,M('#f4f1ea'),s*.04,.025,.097,hd,1,.8,.5);sm(.008,M('#15100c'),s*.04,.025,.106,hd,1,1,.5);sm(.024,sk,s*.105,0,0,hd,.5,1,.8);const br=bx(.04,.007,.01,hr,s*.04,.052,.1,hd)});
+const lg=[-1,1].map(s=>{const p=new T.Group();p.position.set(s*.09,.82,0);g.add(p);cy(.072,.055,.4,pn,0,-.2,0,p,10);const k=new T.Group();k.position.y=-.4;p.add(k);cy(.052,.04,.4,pn,0,-.2,0,k,10);bx(.09,.06,.21,M(fem?'#222':'#17120f'),0,-.42,.05,k);p.userData.k=k;return p});
+const arms=[-1,1].map(s=>{const p=new T.Group();p.position.set(s*.23,1.4,0);g.add(p);cy(.044,.038,.28,top,0,-.14,0,p,10);const k=new T.Group();k.position.y=-.28;k.rotation.x=-.3;p.add(k);cy(.033,.028,.26,sk,0,-.13,0,k,10);sm(.034,sk,0,-.28,0,k,1,1.2,.8);p.userData.k=k;return p});return{g,hd,lg,arms}}
+for(let i=0;i<8;i++){const {g,hd,lg,arms}=human(i),wp=WP[i*2%WP.length];g.position.set(wp[0],0,wp[1]);S2.add(g);AV.push({g,head:hd,lg,arms,t:wp.slice(),w:Math.random()*3,ph:Math.random()*6,f:FOC[i%7],yaw:0})}
+for(const z of [-18,-30]){bx(2.4,.08,.7,M('#3a2c22',{roughness:.5}),0,.48,z);bx(2.2,.46,.5,M('#1d1b19'),0,.23,z)}
+{const pics=[C.r,C.g,C.b,C.m,C.k];[-13.85,13.85].forEach((x,k)=>[-3,-18,-30,-44].forEach((z,j)=>{const w=1.2,h=1.6,c=pics[(j+k)%5],t=tx(300,400,(c2,ww,hh)=>{fill(c2,ww,hh,'#f1eadc');c2.fillStyle=c;c2.fillRect(40,40,220,260);c2.fillStyle=C.k;c2.beginPath();c2.arc(150,170,60,0,7);c2.fill();tw(c2,'PLATE 0'+(j+1),150,350,`16px ${MO}`,C.b)});bx(.06,h+.12,w+.12,M('#2a2217'),x,2.6,z);pl(w,h,t,x-Math.sign(x)*.05,2.6,z,0,-Math.sign(x)*Math.PI/2)}));[-1,1].forEach(q=>bx(.35,.22,72,wm,q*13.85,6.6,-16))}
+S2.traverse(o=>{if(o.isMesh&&!cur.includes(o)&&!o.material.transparent&&!o.material.isMeshBasicMaterial){o.castShadow=o.receiveShadow=true}});
+/* ===== audio ===== */
+let AC,mg,NB,snOn=false;
+function A(){if(AC)return;AC=new(window.AudioContext||window.webkitAudioContext)();mg=AC.createGain();mg.gain.value=0;mg.connect(AC.destination);NB=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);const a=NB.getChannelData(0);let l=0;for(let i=0;i<a.length;i++){l=(l+.02*(Math.random()*2-1))/1.02;a[i]=l*3.5}
+const s=AC.createBufferSource();s.buffer=NB;s.loop=true;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=300;const g=AC.createGain();g.gain.value=.35;s.connect(f);f.connect(g);g.connect(mg);s.start();setInterval(talk,1500)}
+function bz(fr,ty,d,v,sw){if(!snOn)return;const s=AC.createBufferSource();s.buffer=NB;const f=AC.createBiquadFilter(),g=AC.createGain(),t=AC.currentTime;f.type=ty;f.frequency.setValueAtTime(fr,t);if(sw)f.frequency.linearRampToValueAtTime(sw,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(f);f.connect(g);g.connect(mg);s.start(t,Math.random());s.stop(t+d)}
+function tn(f,d,v,ty){if(!snOn)return;const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;o.type=ty||'sine';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f/2,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(mg);o.start(t);o.stop(t+d)}
+function sfx(k){if(!snOn)return;({page:()=>bz(3200,'highpass',.3,.9),cloth:()=>bz(1200,'bandpass',.6,1),thunk:()=>tn(130,.25,.5),ding:()=>{tn(880,.5,.12);tn(1320,.6,.08)},curtain:()=>bz(300,'lowpass',2.4,1.6,900),step:()=>bz(650,'lowpass',.08,.5)})[k]()}
+function talk(){if(!snOn||mode!='museum'||Math.random()<.4)return;const o=AC.createOscillator(),g=AC.createGain(),b=AC.createBiquadFilter();o.type='sawtooth';b.type='bandpass';b.Q.value=3;o.connect(b);b.connect(g);g.connect(mg);const t=AC.currentTime,f0=95+Math.random()*120,n=4+Math.random()*8|0,v=.014+Math.random()*.012;g.gain.setValueAtTime(0,t);for(let i=0;i<n;i++){const q=t+i*.19;o.frequency.setValueAtTime(f0*(.9+Math.random()*.25),q);b.frequency.setValueAtTime(500+Math.random()*900,q);g.gain.linearRampToValueAtTime(Math.random()>.2?v:0,q+.06);g.gain.linearRampToValueAtTime(0,q+.17)}o.start(t);o.stop(t+n*.19+.1)}
+$('#snd').onclick=()=>{A();snOn=!snOn;AC.resume();mg.gain.linearRampToValueAtTime(snOn?.9:0,AC.currentTime+.4);$('#snd').textContent=snOn?'Sound on':'Sound off';$('#snd').setAttribute('aria-pressed',snOn)};
+/* ===== navigation, UI ===== */
+let st=0,ovr=null,mode='intro',mt=0,thT=0,thN=0,mx=0,my=0;const cp=new T.Vector3(0,1.7,17),ct=new T.Vector3(0,2.5,-8),gp=new T.Vector3(),gt=new T.Vector3(),off=new T.Vector3();
+const say=s=>{const c=$('#cap');c.firstElementChild.textContent=s;c.style.opacity=1;clearTimeout(say.t);say.t=setTimeout(()=>c.style.opacity=0,3500)};
+function look(v,d){const p=new T.Vector3(...ST[st].p),dir=p.sub(v).setY(0).normalize();ovr={p:v.clone().addScaledVector(dir,d).add(new T.Vector3(0,.35,0)),t:v.clone()}}
+function go(i){st=Math.max(0,Math.min(8,i));ovr=null;off.set(0,0,0);if(st!=1)BK.s=0;closeAll();if(st==7){thT=0;thN=0;TH.forEach(o=>o.on=0)}ui()}
+function closeAll(){$$('.pn').forEach(p=>p.style.display='none')}
+function ui(){$('#lab').textContent=ST[st].n;['bkp','bkn'].forEach(i=>$('#'+i).style.display=st==1?'':'none');$('#exp').style.display=st>1&&st<8?'':'none';$('#ct').style.display=st==8?'block':'none';const D=DATA[st-2],dc=$('#desc');if(D&&st<8){dc.innerHTML=`<p class="mo">Exhibit 0${st-1} · ${D.c}</p><h3>${D.t}</h3><p>${D.d.split('<br><br>')[0]}</p><p class="mo" style="margin-top:6px">Press Explore for the full story</p>`;dc.style.display='block'}else dc.style.display='none'}
+const bookP=()=>BK.s>0?{p:[0,1.75,.85],t:[0,1.07,.02]}:ST[1];
+function openPan(i){closeAll();const d=DATA[i],p=$('#pan');p.innerHTML=`<p class="mo" style="color:var(--r)">Exhibit 0${i+1}</p><h2>${d.t}</h2><p class="mo">${d.c}</p><p>${d.d}</p><p><b>Melissa's contribution.</b> ${d.m}</p><div class="row"><button id="pp">‹ Previous exhibit</button><button id="pn_">Next exhibit ›</button><button id="pc">Return to collection</button><button id="pl_">Listen</button><button id="px">Close</button></div>`;p.style.display='block';
+$('#pp').onclick=()=>{go(2+(i+5)%6);openPan((i+5)%6)};$('#pn_').onclick=()=>{go(2+(i+1)%6);openPan((i+1)%6)};$('#pc').onclick=()=>{closeAll();$('#idx').style.display='block'};$('#px').onclick=()=>{p.style.display='none';ui()};$('#pl_').onclick=()=>{try{speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(d.t+'. '+d.d+' '+d.m))}catch(e){}}}
+$('#idx').innerHTML='<p class="mo" style="margin-bottom:8px">Collection index</p>'+DATA.map((d,i)=>`<button data-ex="${i}">0${i+1} · ${d.t.split(' — ')[0]}</button>`).join('');
+$('#idx').onclick=e=>{const b=e.target.closest('[data-ex]');if(b){const i=+b.dataset.ex;go(2+i);openPan(i)}};
+$('#ix').onclick=()=>{const v=$('#idx').style.display=='block';closeAll();$('#idx').style.display=v?'none':'block'};
+$('#exp').onclick=()=>openPan(st-2);$('#prev').onclick=()=>go(st-1);$('#next').onclick=()=>go(st+1);$('#again').onclick=()=>go(2);
+$$('[data-go]').forEach(b=>b.onclick=()=>{go(+b.dataset.go)});
+const mainFlip=d=>{if(st!=1)return;if(d>0&&BK.s==BK.n){BK.s=0;sfx('page');setTimeout(()=>go(2),1500)}else if(d<0&&BK.s==0){return}else{BK.s+=d;sfx('page')}};
+$('#bkn').onclick=()=>mainFlip(1);$('#bkp').onclick=()=>mainFlip(-1);
+addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key=='ArrowRight'||e.key=='ArrowDown'){st==1?mainFlip(1):go(st+1)}if(e.key=='ArrowLeft'||e.key=='ArrowUp'){st==1?mainFlip(-1):go(st-1)}if(e.key=='Escape')closeAll();});
+$('#f').onsubmit=e=>{e.preventDefault();const d=new FormData(e.target),m=$('#fm');if(!EMAIL){m.textContent="Contact form isn't connected yet, so nothing was sent. Add your email to EMAIL in the page code to enable it.";return}location.href=`mailto:${EMAIL}?subject=${encodeURIComponent('Project enquiry: '+d.get('t'))}&body=${encodeURIComponent(d.get('m')+'\n\n'+d.get('n')+' · '+d.get('e'))}`;m.textContent='Opening your email app…'};
+$('#lk').innerHTML=(EMAIL?`<a href="mailto:${EMAIL}">${EMAIL}</a> `:'')+Object.entries(LINKS).filter(x=>x[1]).map(x=>`<a href="${x[1]}" target="_blank" rel="noopener">${x[0]}</a>`).join(' · ');
+/* pointer */
+const ray=new T.Raycaster(),mv=new T.Vector2();let dn=null,drag=0;const cv=$('#cv');
+cv.onpointerdown=e=>{dn=[e.clientX,e.clientY];drag=0};
+cv.onpointermove=e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;if(dn&&mode=='museum'){const dx=e.clientX-dn[0],dy=e.clientY-dn[1];if(Math.abs(dx)+Math.abs(dy)>3){drag+=Math.abs(dx)+Math.abs(dy);const r=new T.Vector3().subVectors(ct,cp).cross(new T.Vector3(0,1,0)).normalize();off.addScaledVector(r,-dx*.015);off.y+=dy*.01;off.clampLength(0,5);dn=[e.clientX,e.clientY]}}
+if(mode=='museum'){mv.set(mx*2,-(my*2));ray.setFromCamera(mv,cam);cv.style.cursor=ray.intersectObjects(CL,false).length?'pointer':'grab'}};
+cv.onpointerup=e=>{if(mode!='museum'||drag>8){dn=null;return}dn=null;mv.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ray.setFromCamera(mv,cam);const h=ray.intersectObjects(CL,false)[0];if(!h){ovr=null;return}const o=h.object,B=o.userData.bk;
+if(B){if(B===BK){if(st!=1){go(1);return}const lx=BK.g.worldToLocal(h.point.clone()).x;mainFlip(BK.s==0||lx>0?1:-1)}else flip(B,1)}else o.userData.on&&o.userData.on()};
+cv.onpointerleave=()=>dn=null;
+addEventListener('resize',()=>{rd&&rd.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();if(mode=='intro'&&!baked)mkText()});
+/* ===== modes ===== */
+function toMuseum(){rd.toneMapping=T.ACESFilmicToneMapping;rd.toneMappingExposure=1.35;mode='museum';mt=0;try{localStorage.setItem('maSeen','1')}catch(e){}$('#skip').textContent='Replay intro';$('#sub').style.opacity=0;$('#loc').style.opacity=0;cls.forEach(d=>d.style.opacity=0);cur.forEach((c,i)=>{c.position.x=(i?1:-1)*7;c.scale.x=1});cp.set(0,1.7,17);ct.set(0,2.6,-8);st=0;ui();const cv2=$('#cover');cv2.style.transition='none';cv2.style.opacity=1;requestAnimationFrame(()=>requestAnimationFrame(()=>{cv2.style.transition='opacity 1.6s';cv2.style.opacity=0}));sfx('curtain');$('#ttl').style.opacity=0;setTimeout(()=>$('#ttl').style.opacity=1,2800);setTimeout(()=>$('#ttl').style.opacity=0,9000)}
+$('#skip').onclick=()=>{if(mode=='intro')toMuseum();else{mode='intro';closeAll();$('#ttl').style.opacity=0;resetIntro()}};
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;let seen=0;try{seen=localStorage.getItem('maSeen')}catch(e){}
+if(!rd){mode='none';$('#idx').style.display='block';$$('#bot,#top nav').forEach(e=>e.style.display='none')}else{rd.setPixelRatio(Math.min(devicePixelRatio,2));rd.setSize(innerWidth,innerHeight);rd.shadowMap.enabled=true;rd.shadowMap.type=T.PCFSoftShadowMap;resetIntro();ui();if(reduce||seen){mode='museum';mt=0;toMuseum();$('#skip').textContent='Replay intro'}else mode='intro';
+const clk=new T.Clock();(function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.05),t=clk.elapsedTime;
+if(mode=='intro')return introTick(dt);
+mt+=dt;const k=E((mt-1.4)/3.8);cur.forEach((c,i)=>{const s=i?1:-1;c.scale.x=1-.8*k;c.position.x=s*(7+5.6*k)});
+const sp=bookP();let S=st==1?sp:ST[st];const Pp=ovr?ovr.p:new T.Vector3(...S.p),Tt=ovr?ovr.t:new T.Vector3(...S.t);gp.copy(Pp);gp.x+=mx*.4;gp.y-=my*.15;gt.copy(Tt).add(off);
+if(mt<3){gp.set(0,1.7,mt<1.4?17:14);gt.set(0,2.6,-8)}else if(mt<5.2&&st==0){gp.set(0,1.7,11);}
+const kk=1-Math.exp(-dt*(mt<5?.9:2.3));cp.lerp(gp,kk);ct.lerp(gt,kk);cam.position.copy(cp);cam.lookAt(ct);
+/* animations */
+BK.up(dt);if(mem.books)mem.books.forEach(b=>b.up(dt));
+tspin=Math.max(0,tspin-dt*.5);cspin=Math.max(0,cspin-dt*.5);tee.rotation.y=Math.PI/2+Math.sin(t*.9)*.12+tspin*tspin*12.5;tee.rotation.z=Math.sin(t*1.3)*.03;cap.rotation.y+=dt*(.35+cspin*8);
+if(rope)rope.rotation.z=Math.sin(t*1.2)*.004;fly.position.y=1.9+Math.sin(t*1.1)*.06;fly.rotation.y=Math.sin(t*.6)*.05;flo.forEach((f,i)=>f.position.y=1.9+Math.sin(t*.9+i)*.08);
+mem.forEach(o=>{o.gp.position.y+=((o.sel?1.12:.92)-o.gp.position.y)*.12});
+if(st==7){thT+=dt;if(thT>.8&&thN<TH.length){TH[thN].on=1;thN++;thT=0;sfx('page')}}TH.forEach(o=>{const s=o.gp.scale.x+((o.on?1:.001)-o.gp.scale.x)*.12;o.gp.scale.setScalar(s)});
+AV.forEach((a,i)=>{const g=a.g;a.ph+=dt;if(a.w>0){a.w-=dt;const dx=a.f[0]-g.position.x,dz=a.f[2]-g.position.z,ty=Math.atan2(dx,dz);g.rotation.y+=Math.atan2(Math.sin(ty-g.rotation.y),Math.cos(ty-g.rotation.y))*dt*1.5;a.head.rotation.y=Math.sin(t*.7+i*2)*.5;a.lg.forEach(l=>{l.rotation.x*=.85;l.userData.k.rotation.x*=.85});a.arms.forEach((m,j)=>m.rotation.x=Math.sin(t*1.5+j)*.05);if(a.w<=0){const w=WP[Math.random()*WP.length|0];a.t=w}}
+else{const dx=a.t[0]-g.position.x,dz=a.t[1]-g.position.z,d=Math.hypot(dx,dz);if(d<.3){a.w=2+Math.random()*6;let b=1e9;FOC.forEach(f=>{const q=Math.hypot(f[0]-g.position.x,f[2]-g.position.z);if(q<b){b=q;a.f=f}})}else{const ty=Math.atan2(dx,dz);g.rotation.y+=Math.atan2(Math.sin(ty-g.rotation.y),Math.cos(ty-g.rotation.y))*dt*4;g.position.x+=dx/d*dt*.95;g.position.z+=dz/d*dt*.95;a.ph+=dt*5.5;const s=Math.sin(a.ph*1.6);a.lg[0].rotation.x=s*.55;a.lg[1].rotation.x=-s*.55;a.lg[0].userData.k.rotation.x=Math.max(0,s)*.9;a.lg[1].userData.k.rotation.x=Math.max(0,-s)*.9;a.arms[0].rotation.x=-s*.4;a.arms[1].rotation.x=s*.4;a.head.rotation.y*=.9;g.position.y=Math.abs(s)*.02;if(a.s0!==undefined&&Math.sign(a.s0)!=Math.sign(s)&&cp.distanceTo(g.position)<14)sfx('step');a.s0=s}}});
+rd.render(S2,cam)})()}
+})();
+</script></body></html>
